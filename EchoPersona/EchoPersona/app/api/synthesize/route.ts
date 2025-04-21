@@ -1,9 +1,10 @@
 // For App Router (Next.js 13+)
+import { NextRequest, NextResponse } from "next/server";
 // app/api/synthesize/route.js
-export async function POST(request) {
-    const data = await request.json();
+export async function POST(req: NextRequest) {
+    const data = await req.json();
     
-    const response = await fetch('https://d881-35-238-122-147.ngrok-free.app/synthesize', {
+    const response = await fetch(' https://5d34-34-58-109-119.ngrok-free.app/synthesize', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
