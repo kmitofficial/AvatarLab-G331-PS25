@@ -1,6 +1,7 @@
 import { Settings, Layers, FileVideo, HelpCircle, Trash, AudioLines, Send, UserRound } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroupLabel } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { TopRightIcons } from "./top-right";
 
 type MenuItem = {
   title: string;
@@ -15,14 +16,10 @@ const videos: MenuItem[] = [
   
 ];
 
-const assets: MenuItem[] = [
-  { title: "Avatars", url: "#", icon: UserRound },
-  { title: "Voices", url: "#", icon: AudioLines },
-];
 
 const others: MenuItem[] = [
-  { title: "Feedback", url: "#", icon: Send },
-  { title: "Help & Support", url: "#", icon: HelpCircle },
+  { title: "Feedback", url: "feedback", icon: Send },
+  { title: "Help & Support", url: "help&support", icon: HelpCircle },
 ];
 
 export function AppSidebar() {
@@ -45,20 +42,17 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+
           <SidebarGroupLabel className="mt-2 text-stone-950">Videos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(videos)}</SidebarMenu>
-          </SidebarGroupContent>
-
-          <SidebarGroupLabel className="mt-2 text-stone-950">Assets</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{renderItems(assets)}</SidebarMenu>
           </SidebarGroupContent>
 
           <SidebarGroupLabel className="mt-2 text-stone-950">Others</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(others)}</SidebarMenu>
           </SidebarGroupContent>
+          
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>

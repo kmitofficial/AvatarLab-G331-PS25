@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
 import { useState, useRef } from "react"
 import { Play, Pause, Volume2, VolumeX, Maximize, RotateCw, ArrowRight, ArrowLeft, Check, Send } from "lucide-react"
@@ -12,102 +12,79 @@ import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-// Sample avatar data
-const avatars = [
-  {
-    id: "emma",
-    name: "Emma",
-    gender: "Female",
-    image: "/images/emma.jpeg",
-  },
-  {
-    id: "michael",
-    name: "Michael",
-    gender: "Male",
-    image: "/placeholder.svg?height=400&width=400",
-  },
-  {
-    id: "sofia",
-    name: "Sofia",
-    gender: "Female",
-    image: "/placeholder.svg?height=400&width=400",
-  },
-  {
-    id: "james",
-    name: "James",
-    gender: "Male",
-    image: "/placeholder.svg?height=400&width=400",
-  },
-  {
-    id: "alex",
-    name: "Alex",
-    gender: "Neutral",
-    image: "/placeholder.svg?height=400&width=400",
-  },
-  {
-    id: "custom",
-    name: "Custom",
-    gender: "Custom",
-    image: "/placeholder.svg?height=400&width=400",
-  },
-]
-
-// Sample voice data
-const voices = [
-  {
-    id: "voice1",
-    name: "Emma Voice",
-    gender: "Female",
-    language: "English (US)",
-    preview: "/path-to-audio.mp3",
-  },
-  {
-    id: "voice2",
-    name: "Michael Voice",
-    gender: "Male",
-    language: "English (US)",
-    preview: "/path-to-audio.mp3",
-  },
-  {
-    id: "voice3",
-    name: "Sofia Voice",
-    gender: "Female",
-    language: "English (UK)",
-    preview: "/path-to-audio.mp3",
-  },
-  {
-    id: "voice4",
-    name: "James Voice",
-    gender: "Male",
-    language: "English (UK)",
-    preview: "/path-to-audio.mp3",
-  },
-  {
-    id: "voice5",
-    name: "Alex Voice",
-    gender: "Neutral",
-    language: "English (US)",
-    preview: "/path-to-audio.mp3",
-  },
-]
+type Avatar = { id: string; name: string; gender:string; video: string;}
+type Voice = {id: string; name: string; gender: string; audio: string; text: string};
 
 export default function WorkspacePage() {
   const [currentStep, setCurrentStep] = useState(1)
-  const [scriptText, setScriptText] = useState("")
-  const [selectedAvatar, setSelectedAvatar] = useState("")
-  const [selectedVoice, setSelectedVoice] = useState("")
+
+  const [generateForm, setGenerateForm] = React.useState({text:"",video:"",audio:""});
+
   const [isGenerating, setIsGenerating] = useState(false)
   const [previewReady, setPreviewReady] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  const [avatar, setAvatars] = useState<Avatar[]>([]);
+  const [voice, setVoices] = useState<Voice[]>([]);
+
+  const [playingVideo, setPlayingVideo] = useState<Record<string, boolean>>({})
+  const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+
+  const [playingAudio, setPlayingAudio] = useState<Record<string, boolean>>({})
+  const audioRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+
+  {/*
+  React.useEffect(() => {
+    const fetchAvatars = async () => {
+      const res = await fetch('/api/dev/avatars');
+      const data = await res.json();
+      setAvatars(data);
+    };
+
+    const fetchVoices = async () => {
+      const res = await fetch('/api/dev/voices');
+      const data = await res.json();
+      setVoices(data);
+    }
+
+    fetchAvatars();
+    fetchVoices();
+  }, []); */}
+
+  const toggleVideo = (id: string) => {
+    const video = videoRefs.current[id];
+    if (video) {
+      if (video.paused) {
+        video.play();
+        setPlayingVideo((prev) => ({ ...prev, [id]: true }));
+      }else {
+        video.pause();
+        setPlayingVideo((prev) => ({ ...prev, [id]: false }))
+      }
+    }
+  }
+
+  const toggleAudio = (id: string) => {
+    const video = videoRefs.current[id];
+    if (video) {
+      if (video.paused) {
+        video.play();
+        setPlayingVideo((prev) => ({ ...prev, [id]: true }));
+      } else {
+        video.pause();
+        setPlayingVideo((prev) => ({ ...prev, [id]: false }))
+      }
+    }
+  }
+
   const handleNextStep = () => {
-    if (currentStep === 1 && scriptText.trim() !== "") {
+    if (currentStep === 1 && generateForm.text.trim() !== "") {
       setCurrentStep(2)
-    } else if (currentStep === 2 && selectedAvatar !== "") {
+    } else if (currentStep === 2 && generateForm.video !== null) {
       setCurrentStep(3)
-    } else if (currentStep === 3 && selectedVoice !== "") {
+    } else if (currentStep === 3 && generateForm.audio !== "") {
       handleGenerate()
     }
   }
@@ -119,19 +96,13 @@ export default function WorkspacePage() {
   }
 
   const handleGenerate = () => {
-    setIsGenerating(true)
-    // Simulate generation process
-    setTimeout(() => {
-      setIsGenerating(false)
-      setPreviewReady(true)
-      setCurrentStep(4) // Move to preview step
-    }, 3000)
+
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey && currentStep === 1) {
       e.preventDefault()
-      if (scriptText.trim() !== "") {
+      if (generateForm.text.trim() !== "") {
         handleNextStep()
       }
     }
@@ -153,7 +124,7 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className="p-2 container mx-auto">
+    <div className="p-0 container mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           {getStepTitle()}
@@ -174,15 +145,15 @@ export default function WorkspacePage() {
             <div className="relative mt-8">
               <Textarea
                 ref={textareaRef}
-                value={scriptText}
-                onChange={(e) => setScriptText(e.target.value)}
+                value={generateForm.text}
+                onChange={(e) =>(setGenerateForm(prev => ({...prev,text:e.target.value})))}
                 onKeyDown={handleKeyDown}
                 placeholder="Type or paste your script here..."
-                className="min-h-[150px] pr-12 resize-none border-blue-200 dark:border-blue-800 focus-visible:ring-blue-500 rounded-xl"
+                className="min-h-[100px] pr-12 resize-none border-blue-200 dark:border-blue-800 focus-visible:ring-blue-500 rounded-xl"
               />
               <Button
                 onClick={handleNextStep}
-                disabled={scriptText.trim() === ""}
+                disabled={generateForm.text.trim() === ""}
                 className="absolute bottom-3 right-3 rounded-full h-9 w-9 p-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
                 <Send className="h-4 w-4" />
@@ -192,6 +163,7 @@ export default function WorkspacePage() {
 
             <div className="mt-2 text-xs text-center text-muted-foreground">Press Enter to continue</div>
           </div>
+
         )}
 
         {/* Step 2: Select Avatar */}
@@ -204,23 +176,35 @@ export default function WorkspacePage() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-              {avatars.map((avatar) => (
+              {avatar.map((avatar) => (
                 <Card
                   key={avatar.id}
-                  onClick={() => setSelectedAvatar(avatar.id)}
+                  onClick={() => setGenerateForm(prev =>({...prev,video:avatar.video}))}
                   className={`p-0 rounded-sm overflow-hidden cursor-pointer transition-all hover:shadow-md
-                    ${
-                      selectedAvatar === avatar.id
-                        ? "border-blue-500 ring-2 ring-blue-500"
-                        : "border-gray-200 dark:border-gray-800"
+                    ${generateForm.video === avatar.video
+                      ? "border-blue-500 ring-2 ring-blue-500"
+                      : "border-gray-200 dark:border-gray-800"
                     }`}
                 >
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={avatar.image || "/placeholder.svg"}
-                      alt={avatar.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+                    <video ref={(el) => {
+                      if (el) videoRefs.current[avatar.id] = el;
+                    }} src={avatar.video} />
+
+
+                    {/* Play/Pause button overlay */}
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="absolute bottom-3 left-3 h-10 w-10 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 shadow-md"
+                      onClick={() => toggleVideo(avatar.id)}
+                    >
+                      {playingVideo[avatar.id] === true ? (
+                        <Pause className="h-5 w-5 text-blue-600 dark:text-white" />
+                      ) : (
+                        <Play className="h-5 w-5 text-blue-600 dark:text-white" />
+                      )}
+                    </Button>
                   </div>
                   <CardContent className="p-3">
                     <div className="flex justify-between items-center">
@@ -228,7 +212,7 @@ export default function WorkspacePage() {
                         <p className="font-medium">{avatar.name}</p>
                         <p className="text-xs text-muted-foreground">{avatar.gender}</p>
                       </div>
-                      {selectedAvatar === avatar.id && (
+                      {generateForm.video == avatar.video && (
                         <div className="h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
                           <Check className="h-3 w-3 text-white" />
                         </div>
@@ -247,7 +231,7 @@ export default function WorkspacePage() {
 
               <Button
                 onClick={handleNextStep}
-                disabled={selectedAvatar === ""}
+                disabled={generateForm.video === null}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
                 Next
@@ -265,19 +249,18 @@ export default function WorkspacePage() {
             </div>
 
             <div className="space-y-3 mb-6">
-              {voices.map((voice) => (
+              {voice.map((voice) => (
                 <Card
                   key={voice.id}
                   className={`p-0 rounded-none shadow-md overflow-hidden transition-all
-                    ${
-                      selectedVoice === voice.id
-                        ? "border-blue-500 ring-1 ring-blue-500"
-                        : "border-gray-200 dark:border-gray-800"
+                    ${generateForm.audio === voice.audio
+                      ? "border-blue-500 ring-1 ring-blue-500"
+                      : "border-gray-200 dark:border-gray-800"
                     }`}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-2">
-                      <RadioGroup value={selectedVoice} onValueChange={setSelectedVoice} className="flex-1">
+                      <RadioGroup value={generateForm.audio} onValueChange={(value) => setGenerateForm(prev => ({...prev,audio:value}))} className="flex-1">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value={voice.id} id={voice.id} className="text-blue-600" />
                           <div>
@@ -285,13 +268,18 @@ export default function WorkspacePage() {
                               {voice.name}
                             </Label>
                             <p className="mt-2 text-xs text-muted-foreground">
-                              {voice.gender} • {voice.language}
+                              {voice.gender} • English
                             </p>
                           </div>
                         </div>
                       </RadioGroup>
-                      <Button variant="outline" size="sm" className="h-8 border-blue-200 dark:border-blue-800">
+                      <Button variant="outline" size="sm" className="h-8 border-blue-200 dark:border-blue-800"
+                        onClick={(e) => {
+                          const audio = e.currentTarget.querySelector("audio");
+                          audio?.play();
+                        }}>
                         <Play className="h-3 w-3 mr-1" /> Preview
+                        <audio src={voice.audio}></audio>
                       </Button>
                     </div>
                   </CardContent>
@@ -307,7 +295,7 @@ export default function WorkspacePage() {
 
               <Button
                 onClick={handleGenerate}
-                disabled={selectedVoice === "" || isGenerating}
+                disabled={generateForm.audio === "" || isGenerating}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               >
                 {isGenerating ? (
