@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Avatar {
+  id          String   @id @default(uuid())
+  name        String
+  gender      String
+  video       Bytes
+}
+
+model Voice {
+  id        String   @id @default(uuid())
+  name      String
+  text      String
+  gender    String
+  audio     Bytes   
+  language  String
+}

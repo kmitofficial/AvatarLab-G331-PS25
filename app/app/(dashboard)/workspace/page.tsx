@@ -33,9 +33,10 @@ export default function WorkspacePage() {
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   const [playingAudio, setPlayingAudio] = useState<Record<string, boolean>>({})
-  const audioRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({})
 
-  {/*
+
+
   React.useEffect(() => {
     const fetchAvatars = async () => {
       const res = await fetch('/api/dev/avatars');
@@ -51,7 +52,7 @@ export default function WorkspacePage() {
 
     fetchAvatars();
     fetchVoices();
-  }, []); */}
+  }, []);
 
   const toggleVideo = (id: string) => {
     const video = videoRefs.current[id];
@@ -67,17 +68,24 @@ export default function WorkspacePage() {
   }
 
   const toggleAudio = (id: string) => {
-    const video = videoRefs.current[id];
-    if (video) {
-      if (video.paused) {
-        video.play();
-        setPlayingVideo((prev) => ({ ...prev, [id]: true }));
+    const audio = audioRefs.current[id]
+    if (audio) {
+      if (audio.paused) {
+        Object.entries(audioRefs.current).forEach(([key, a]) => {
+          if (a && key !== id) {
+            a.pause()
+            setPlayingAudio((prev) => ({ ...prev, [key]: false }))
+          }
+        })
+        audio.play()
+        setPlayingAudio((prev) => ({ ...prev, [id]: true }))
       } else {
-        video.pause();
-        setPlayingVideo((prev) => ({ ...prev, [id]: false }))
+        audio.pause()
+        setPlayingAudio((prev) => ({ ...prev, [id]: false }))
       }
     }
   }
+  
 
   const handleNextStep = () => {
     if (currentStep === 1 && generateForm.text.trim() !== "") {
@@ -310,6 +318,7 @@ export default function WorkspacePage() {
             </div>
           </div>
         )}
+
 
         {/* Step 4: Preview */}
         {currentStep === 4 && (
