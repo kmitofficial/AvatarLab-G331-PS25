@@ -28,7 +28,10 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cookie": "^1.0.2",
     "dotenv": "^16.4.7",
+    "jose": "^6.0.10",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.485.0",
     "mongodb": "^6.15.0",
     "next": "15.2.4",
@@ -43,6 +46,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/fluent-ffmpeg": "^2.1.27",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
