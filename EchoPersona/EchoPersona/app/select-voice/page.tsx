@@ -244,7 +244,7 @@ export default function SelectVoice() {
       <header className="bg-white p-4 shadow-md">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-600">Select a Voice</h1>
-          <div className="text-sm text-gray-500">Step 2 of 2</div>
+          <div className="text-sm text-gray-500">Step 1 of 2</div>
         </div>
       </header>
 

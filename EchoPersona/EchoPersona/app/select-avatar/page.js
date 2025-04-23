@@ -7,12 +7,36 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 
 export default function SelectAvatar() {
+    const [avatars, setAvatars] = useState([]);
     const [selectedAvatar, setSelectedAvatar] = useState(null);
     const [inputText, setInputText] = useState("");
     const [playingVideo, setPlayingVideo] = useState(null);
     const [videoLoaded, setVideoLoaded] = useState({});
     const videoRefs = useRef({});
     const router = useRouter();
+
+    useEffect(() => {
+        async function fetchAvatars() {
+            try {
+                const response = await fetch("/api/avatars");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch avatars");
+                }
+                const data = await response.json();
+                const fetchedAvatars = data.map(avatar => ({
+                    id: avatar.id,
+                    name: avatar.name,
+                    videoUrl: `/api/video/${avatar.id}`,
+                    gender: avatar.gender,
+                }));
+                setAvatars(fetchedAvatars);
+            } catch (error) {
+                console.error("Error fetching avatars:", error);
+            }
+        }
+
+        fetchAvatars();
+    }, []);
 
     useEffect(() => {
         const text = localStorage.getItem("synthesisText");
@@ -23,39 +47,20 @@ export default function SelectAvatar() {
         }
     }, [router]);
 
-    // Updated avatar data with re-encoded video URLs and poster URLs
-    const avatars = [
-        {
-            id: 1,
-            name: "Bill",
-            videoUrl: "/Bill.mp4",
-            gender: "Male",
-            posterUrl: "Bill.jpeg",
-        },
-        {
-            id: 2,
-            name: "Lamar",
-            videoUrl: "/lamar.mp4",
-            gender: "Male",
-            posterUrl: "lamar.jpeg",
-        },
-    ];
-
-    // Check video file existence and load status
     useEffect(() => {
         const loadingStatus = {};
         avatars.forEach((avatar) => {
             fetch(avatar.videoUrl, { method: "HEAD" })
                 .then((response) => {
                     if (!response.ok) {
-                        throw new Error(`Video file not found: ${avatar.videoUrl}`);
+                        throw new Error(`Video not accessible: ${avatar.videoUrl}`);
                     }
-                    console.log(`Video file ${avatar.videoUrl} exists and is accessible`);
+                    console.log(`Video for ${avatar.name} is accessible`);
                     loadingStatus[avatar.id] = true;
                     setVideoLoaded((prev) => ({ ...prev, [avatar.id]: true }));
                 })
                 .catch((error) => {
-                    console.error(`Error checking video file: ${error.message}`);
+                    console.error(`Error checking video for ${avatar.name}: ${error.message}`);
                     loadingStatus[avatar.id] = false;
                     setVideoLoaded((prev) => ({ ...prev, [avatar.id]: false }));
                 });
@@ -66,7 +71,7 @@ export default function SelectAvatar() {
                 videoRefs.current[playingVideo].pause();
             }
         };
-    }, []);
+    }, [avatars]);
 
     const handleNext = () => {
         if (selectedAvatar) {
@@ -75,12 +80,10 @@ export default function SelectAvatar() {
         }
     };
 
-
     const handleBack = () => {
         router.push("/Home");
     };
 
-    // Improved play avatar preview function with audio support
     const handlePlayPreview = (e, avatar) => {
         e.stopPropagation();
         e.preventDefault();
@@ -111,7 +114,7 @@ export default function SelectAvatar() {
 
         try {
             videoElement.currentTime = 0;
-            videoElement.muted = false; // Ensure audio is unmuted
+            videoElement.muted = false;
             if (videoElement.readyState >= 3) {
                 const playPromise = videoElement.play();
                 if (playPromise !== undefined) {
@@ -199,7 +202,6 @@ export default function SelectAvatar() {
                                             loop
                                             playsInline
                                             controls={false}
-                                            poster={avatar.posterUrl} // First frame as placeholder
                                             className="w-full h-full object-cover"
                                             style={{
                                                 objectFit: "cover",
