@@ -1,7 +1,7 @@
 // app/Home/page.tsx
 "use client";
 
-import "@/app/globals.css";
+//import "@/app/globals.css";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

@@ -4,13 +4,15 @@ import "@/app/select-avatar/page.css";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Pause, Check } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import {Button} from "@/components/ui/button" // Assuming these are from a UI library like ShadCN
 
 export default function SelectAvatar() {
     const [avatars, setAvatars] = useState([]);
-    const [selectedAvatar, setSelectedAvatar] = useState(null);
+    const [generateForm, setGenerateForm] = useState({ video: null }); // Updated to match the new logic's state
     const [inputText, setInputText] = useState("");
-    const [playingVideo, setPlayingVideo] = useState(null);
+    const [playingVideo, setPlayingVideo] = useState({}); // Updated to match the new logic's state
     const [videoLoaded, setVideoLoaded] = useState({});
     const videoRefs = useRef({});
     const router = useRouter();
@@ -26,7 +28,7 @@ export default function SelectAvatar() {
                 const fetchedAvatars = data.map(avatar => ({
                     id: avatar.id,
                     name: avatar.name,
-                    videoUrl: `/api/video/${avatar.id}`,
+                    video: avatar.video, // Updated to match the API response field
                     gender: avatar.gender,
                 }));
                 setAvatars(fetchedAvatars);
@@ -50,10 +52,10 @@ export default function SelectAvatar() {
     useEffect(() => {
         const loadingStatus = {};
         avatars.forEach((avatar) => {
-            fetch(avatar.videoUrl, { method: "HEAD" })
+            fetch(avatar.video, { method: "HEAD" })
                 .then((response) => {
                     if (!response.ok) {
-                        throw new Error(`Video not accessible: ${avatar.videoUrl}`);
+                        throw new Error(`Video not accessible: ${avatar.video}`);
                     }
                     console.log(`Video for ${avatar.name} is accessible`);
                     loadingStatus[avatar.id] = true;
@@ -67,85 +69,60 @@ export default function SelectAvatar() {
         });
 
         return () => {
-            if (playingVideo !== null && videoRefs.current[playingVideo]) {
-                videoRefs.current[playingVideo].pause();
-            }
+            Object.keys(videoRefs.current).forEach((id) => {
+                if (videoRefs.current[id]) {
+                    videoRefs.current[id].pause();
+                }
+            });
         };
     }, [avatars]);
 
+    const toggleVideo = (avatarId) => {
+        const videoElement = videoRefs.current[avatarId];
+        if (!videoElement) {
+            console.error(`Video element for avatar ${avatarId} not found`);
+            return;
+        }
+
+        if (playingVideo[avatarId]) {
+            videoElement.pause();
+            setPlayingVideo((prev) => ({ ...prev, [avatarId]: false }));
+        } else {
+            Object.keys(playingVideo).forEach((id) => {
+                if (playingVideo[id] && videoRefs.current[id]) {
+                    videoRefs.current[id].pause();
+                    setPlayingVideo((prev) => ({ ...prev, [id]: false }));
+                }
+            });
+
+            videoElement.currentTime = 0;
+            videoElement.muted = false;
+            const playPromise = videoElement.play();
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        setPlayingVideo((prev) => ({ ...prev, [avatarId]: true }));
+                        console.log(`Playing video for avatar ID ${avatarId}`);
+                    })
+                    .catch((error) => {
+                        console.error("Error playing video:", error);
+                    });
+            }
+        }
+    };
+
     const handleNext = () => {
-        if (selectedAvatar) {
-            localStorage.setItem("selectedAvatar", JSON.stringify(selectedAvatar));
-            router.push("/select-voice");
+        if (generateForm.video) {
+            const selectedAvatar = avatars.find((avatar) => avatar.video === generateForm.video);
+            if (selectedAvatar) {
+                localStorage.setItem("selectedAvatar", JSON.stringify(selectedAvatar));
+                router.push("/select-voice");
+            }
         }
     };
 
     const handleBack = () => {
         router.push("/Home");
-    };
-
-    const handlePlayPreview = (e, avatar) => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        const videoElement = videoRefs.current[avatar.id];
-
-        if (!videoElement) {
-            console.error(`Video element for avatar ${avatar.id} not found`);
-            return;
-        }
-
-        console.log("Video element:", videoElement);
-        console.log("Video ready state:", videoElement.readyState);
-        console.log("Video network state:", videoElement.networkState);
-        console.log("Video error:", videoElement.error);
-        console.log("Current src:", videoElement.currentSrc);
-
-        if (playingVideo === avatar.id) {
-            videoElement.pause();
-            setPlayingVideo(null);
-            console.log(`Paused video for avatar ${avatar.name}`);
-            return;
-        }
-
-        if (playingVideo !== null && videoRefs.current[playingVideo]) {
-            videoRefs.current[playingVideo].pause();
-        }
-
-        try {
-            videoElement.currentTime = 0;
-            videoElement.muted = false;
-            if (videoElement.readyState >= 3) {
-                const playPromise = videoElement.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .then(() => {
-                            setPlayingVideo(avatar.id);
-                            console.log(`Playing video for ${avatar.name} with audio`);
-                        })
-                        .catch((error) => {
-                            console.error("Error playing video:", error);
-                        });
-                }
-            } else {
-                const canPlayHandler = () => {
-                    videoElement.play()
-                        .then(() => {
-                            setPlayingVideo(avatar.id);
-                        })
-                        .catch((error) => {
-                            console.error("Error playing video after canplay event:", error);
-                        });
-                    videoElement.removeEventListener("canplay", canPlayHandler);
-                };
-                videoElement.addEventListener("canplay", canPlayHandler);
-                if (videoElement.networkState === 0) {
-                    videoElement.load();
-                }
-            }
-        } catch (error) {
-            console.error("Unexpected error playing video:", error);
-        }
     };
 
     const containerVariants = {
@@ -177,7 +154,7 @@ export default function SelectAvatar() {
                     </div>
 
                     <motion.div
-                        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8"
+                        className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
@@ -186,19 +163,21 @@ export default function SelectAvatar() {
                             <motion.div
                                 key={avatar.id}
                                 variants={avatarVariants}
-                                className={`bg-white rounded-2xl shadow-sm overflow-hidden cursor-pointer transition-all ${
-                                    selectedAvatar?.id === avatar.id ? "ring-4 ring-purple-400" : "hover:shadow-md"
-                                }`}
-                                onClick={() => setSelectedAvatar(avatar)}
                             >
-                                <div className="aspect-square relative bg-gradient-to-br from-purple-50 to-blue-50">
-                                    <div className="absolute inset-0 flex items-center justify-center">
+                                <Card
+                                    onClick={() => setGenerateForm((prev) => ({ ...prev, video: avatar.video }))}
+                                    className={`p-0 rounded-sm overflow-hidden cursor-pointer transition-all hover:shadow-md
+                                        ${generateForm.video === avatar.video
+                                            ? "border-blue-500 ring-2 ring-blue-500"
+                                            : "border-gray-200 dark:border-gray-800"
+                                        }`}
+                                >
+                                    <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
                                         <video
                                             ref={(el) => {
                                                 if (el) videoRefs.current[avatar.id] = el;
                                             }}
-                                            key={`video-${avatar.id}`}
-                                            src={avatar.videoUrl}
+                                            src={avatar.video}
                                             loop
                                             playsInline
                                             controls={false}
@@ -213,28 +192,25 @@ export default function SelectAvatar() {
                                                 console.log(`Video for ${avatar.name} loaded successfully`);
                                                 setVideoLoaded((prev) => ({ ...prev, [avatar.id]: true }));
                                             }}
-                                            onCanPlay={() => {
-                                                console.log(`Video for ${avatar.name} can play now`);
-                                            }}
-                                            onPlay={() => {
-                                                console.log(`Video for ${avatar.name} started playing`);
-                                            }}
                                             onError={(e) => {
                                                 console.error(`Failed to load video for ${avatar.name}:`, e.target.error);
                                                 setVideoLoaded((prev) => ({ ...prev, [avatar.id]: false }));
                                             }}
                                         />
-                                        <button
-                                            className="absolute bottom-4 left-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors z-10"
-                                            onClick={(e) => handlePlayPreview(e, avatar)}
-                                            aria-label={playingVideo === avatar.id ? "Pause video" : "Play video"}
+
+                                        {/* Play/Pause button overlay */}
+                                        <Button
+                                            variant="secondary"
+                                            size="icon"
+                                            className="absolute bottom-3 left-3 h-10 w-10 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 shadow-md"
+                                            onClick={() => toggleVideo(avatar.id)}
                                         >
-                                            {playingVideo === avatar.id ? (
-                                                <Pause size={18} className="text-purple-600" />
+                                            {playingVideo[avatar.id] === true ? (
+                                                <Pause className="h-5 w-5 text-blue-600 dark:text-white" />
                                             ) : (
-                                                <Play size={18} className="text-purple-600" />
+                                                <Play className="h-5 w-5 text-blue-600 dark:text-white" />
                                             )}
-                                        </button>
+                                        </Button>
 
                                         {videoLoaded[avatar.id] === false && (
                                             <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center z-5">
@@ -242,11 +218,20 @@ export default function SelectAvatar() {
                                             </div>
                                         )}
                                     </div>
-                                </div>
-                                <div className="p-4 text-center">
-                                    <h3 className="font-medium text-gray-800">{avatar.name}</h3>
-                                    <p className="text-sm text-gray-500">{avatar.gender}</p>
-                                </div>
+                                    <CardContent className="p-3">
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <p className="font-medium">{avatar.name}</p>
+                                                <p className="text-xs text-muted-foreground">{avatar.gender}</p>
+                                            </div>
+                                            {generateForm.video === avatar.video && (
+                                                <div className="h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                                    <Check className="h-3 w-3 text-white" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             </motion.div>
                         ))}
                     </motion.div>
@@ -260,9 +245,9 @@ export default function SelectAvatar() {
                         </button>
                         <button
                             onClick={handleNext}
-                            disabled={!selectedAvatar}
+                            disabled={!generateForm.video}
                             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
-                                selectedAvatar
+                                generateForm.video
                                     ? "bg-purple-600 text-white hover:bg-purple-700"
                                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                             }`}
