@@ -3,12 +3,11 @@
 import React from "react"
 
 import { useState, useRef } from "react"
-import { Play, Pause, Volume2, VolumeX, Maximize, RotateCw, ArrowRight, ArrowLeft, Check, Send } from "lucide-react"
+import { Play, Pause, RotateCw, ArrowRight, ArrowLeft, Check, Send } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
@@ -18,12 +17,11 @@ type Voice = {id: string; name: string; gender: string; audio: string; text: str
 export default function WorkspacePage() {
   const [currentStep, setCurrentStep] = useState(1)
 
-  const [generateForm, setGenerateForm] = React.useState({text:"",video:"",audio:""});
+  const [generateForm, setGenerateForm] = React.useState({email:"nikhilesh@gmail.com",text:"",video:"",audio:"",audio_text:""});
 
   const [isGenerating, setIsGenerating] = useState(false)
-  const [previewReady, setPreviewReady] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
+  const [preview, setPreview] = useState("")
+
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const [avatar, setAvatars] = useState<Avatar[]>([]);
@@ -103,8 +101,18 @@ export default function WorkspacePage() {
     }
   }
 
-  const handleGenerate = () => {
-
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    const response = await fetch('/api/user/generate',{
+      method:'POST',
+      body: JSON.stringify(generateForm)
+    });
+    if(response.ok){
+      setIsGenerating(false);
+      const { video } = await response.json();
+      setPreview(video);
+      setCurrentStep(4);
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -187,9 +195,9 @@ export default function WorkspacePage() {
               {avatar.map((avatar) => (
                 <Card
                   key={avatar.id}
-                  onClick={() => setGenerateForm(prev =>({...prev,video:avatar.video}))}
+                  onClick={() => setGenerateForm(prev =>({...prev,video:avatar.id}))}
                   className={`p-0 rounded-sm overflow-hidden cursor-pointer transition-all hover:shadow-md
-                    ${generateForm.video === avatar.video
+                    ${generateForm.video === avatar.id
                       ? "border-blue-500 ring-2 ring-blue-500"
                       : "border-gray-200 dark:border-gray-800"
                     }`}
@@ -197,7 +205,7 @@ export default function WorkspacePage() {
                   <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
                     <video ref={(el) => {
                       if (el) videoRefs.current[avatar.id] = el;
-                    }} src={avatar.video} />
+                    }} src={avatar.video} preload="metadata"/>
 
 
                     {/* Play/Pause button overlay */}
@@ -268,7 +276,7 @@ export default function WorkspacePage() {
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-2">
-                      <RadioGroup value={generateForm.audio} onValueChange={(value) => setGenerateForm(prev => ({...prev,audio:value}))} className="flex-1">
+                      <RadioGroup value={generateForm.audio} onValueChange={(value) => setGenerateForm(prev => ({...prev,audio:voice.id,audio_text:voice.text}))} className="flex-1">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value={voice.id} id={voice.id} className="text-blue-600" />
                           <div>
@@ -282,12 +290,11 @@ export default function WorkspacePage() {
                         </div>
                       </RadioGroup>
                       <Button variant="outline" size="sm" className="h-8 border-blue-200 dark:border-blue-800"
-                        onClick={(e) => {
-                          const audio = e.currentTarget.querySelector("audio");
-                          audio?.play();
-                        }}>
-                        <Play className="h-3 w-3 mr-1" /> Preview
-                        <audio src={voice.audio}></audio>
+                        onClick={() => toggleAudio(voice.id)}>
+                        {playingAudio[voice.id] ? ( <Pause className="h-4 w-4 mr-1" />) : (<Play className="h-4 w-4 mr-1" />)} 
+                        Preview
+                        <audio ref={(el) => {if (el) audioRefs.current[voice.id] = el;}} 
+                        src={voice.audio}></audio>
                       </Button>
                     </div>
                   </CardContent>
@@ -329,65 +336,19 @@ export default function WorkspacePage() {
               </p>
             </div>
 
-            <Card className="p-0 rounded-none overflow-hidden border-blue-200 dark:border-blue-800 shadow-md mb-6">
-              <div className="relative aspect-video bg-gradient-to-br from-gray-900 to-black">
-                {previewReady ? (
-                  <div className="h-full w-full">
-                    <img
-                      src="/placeholder.svg?height=720&width=1280"
-                      alt="Video preview"
-                      className="h-50 w-50 object-cover"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-16 w-16 rounded-full bg-black/50 text-white hover:bg-black/70 border-white/20"
-                        onClick={() => setIsPlaying(!isPlaying)}
-                      >
-                        {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8 pl-1" />}
-                      </Button>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent p-4">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-white hover:bg-white/20"
-                        onClick={() => setIsPlaying(!isPlaying)}
-                      >
-                        {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-                      </Button>
-                      <div className="flex-1">
-                        <Slider
-                          defaultValue={[0]}
-                          className="[&>span:first-child]:bg-white/30 [&>span:first-child_span]:bg-blue-500"
-                        />
-                      </div>
-                      <div className="text-sm text-white">00:00 / 01:30</div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-white hover:bg-white/20"
-                        onClick={() => setIsMuted(!isMuted)}
-                      >
-                        {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-                      </Button>
-                      <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
-                        <Maximize className="h-5 w-5" />
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center text-white">
-                    <RotateCw className="h-8 w-8 animate-spin mb-4" />
-                    <p className="text-center text-lg font-medium">Generating your video...</p>
-                    <p className="text-center text-sm text-white/70">This may take a few moments</p>
-                  </div>
-                )}
-              </div>
-            </Card>
+            
+            <div className="flex justify-center items-center mb-6">
+              <video
+                src={preview}
+                width={400}
+                height={400}
+                className="object-cover rounded-sm shadow-md"
+                preload="metadata"
+                controls
+              />
+            </div>
+            
 
-            {previewReady && (
               <>
                 <div className="flex justify-between">
                   <Button
@@ -409,7 +370,7 @@ export default function WorkspacePage() {
                   </div>
                 </div>
               </>
-            )}
+              
           </div>
         )}
       </div>
