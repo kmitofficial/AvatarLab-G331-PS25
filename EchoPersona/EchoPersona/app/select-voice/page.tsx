@@ -1,6 +1,6 @@
 // app/select-voice/page.tsx
 "use client";
-//import "@/app/globals.css";
+import "@/app/globals.css";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -117,17 +117,17 @@ export default function SelectVoice() {
   };
 
   const handleBack = () => {
-    router.push("/select-avatar");
+    router.push("/Home");
   };
 
-  const handleGenerate = async () => {
+  const handleNext = async () => {
     if (!selectedVoice || !userId || !username) {
       console.error("Missing selectedVoice, userId, or username");
       return;
     }
-
+    
     setIsGenerating(true);
-
+    
     try {
       // Save .wav file to server and PostgreSQL
       const dbResponse = await fetch("/api/save-wav", {
@@ -140,30 +140,34 @@ export default function SelectVoice() {
           audioData: selectedVoice.audioData,
         }),
       });
-
+      
       if (!dbResponse.ok) {
         const errorData = await dbResponse.json();
         throw new Error(`Failed to save audio: ${errorData.message}`);
       }
-
+      
       const { audioFilePath } = await dbResponse.json();
-
+      
       // Simulate video generation (replace with actual API call if needed)
       await new Promise((resolve) => setTimeout(resolve, 3000));
-
+      
+      // Store the selected voice ID along with other data
       localStorage.setItem(
         "generatedVideo",
         JSON.stringify({
           text: inputText,
           avatar: selectedAvatar,
           voice: selectedVoice,
-          videoUrl: "/api/placeholder/640/480", // Replace with real video URL
+          voiceId: selectedVoice.id, // Store the voice ID
           audioUrl: audioFilePath, // Store .wav URL
           timestamp: new Date().toISOString(),
         })
       );
-
-      router.push("/result");
+      
+      // Also store just the voice ID separately for easy access
+      localStorage.setItem("selectedVoiceId", selectedVoice.id);
+      
+      router.push("/select-avatar");
     } catch (error) {
       console.error("Error generating video or saving audio:", error);
       alert("There was an error generating your video or saving audio. Please try again.");
@@ -372,7 +376,7 @@ export default function SelectVoice() {
               <ChevronLeft size={20} /> Back
             </button>
             <button
-              onClick={handleGenerate}
+              onClick={handleNext}
               disabled={!selectedVoice || isGenerating || isLoading}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
                 selectedVoice && !isGenerating && !isLoading

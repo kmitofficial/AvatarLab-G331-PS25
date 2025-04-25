@@ -14,6 +14,7 @@ export default function SelectAvatar() {
     const [inputText, setInputText] = useState("");
     const [playingVideo, setPlayingVideo] = useState({}); // Updated to match the new logic's state
     const [videoLoaded, setVideoLoaded] = useState({});
+    const [isGenerating, setIsGenerating] = useState(false);
     const videoRefs = useRef({});
     const router = useRouter();
 
@@ -111,18 +112,76 @@ export default function SelectAvatar() {
         }
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (generateForm.video) {
-            const selectedAvatar = avatars.find((avatar) => avatar.video === generateForm.video);
-            if (selectedAvatar) {
-                localStorage.setItem("selectedAvatar", JSON.stringify(selectedAvatar));
-                router.push("/select-voice");
+          const selectedAvatar = avatars.find((avatar) => avatar.video === generateForm.video);
+          if (selectedAvatar) {
+            try {
+              // Store the selected avatar
+              localStorage.setItem("selectedAvatar", JSON.stringify(selectedAvatar));
+              
+              // Set loading state
+              localStorage.setItem("videoProcessingStatus", "processing");
+              
+              // Get previously stored data
+              const storedData = JSON.parse(localStorage.getItem("generatedVideo") || "{}");
+              
+              // Prepare form data for the API request
+              const formData = new FormData();
+              
+              // Add the reference audio file
+              if (storedData.audioUrl) {
+                const audioResponse = await fetch(storedData.audioUrl);
+                const audioBlob = await audioResponse.blob();
+                formData.append('reference_audio', audioBlob, 'user_audio.wav');
+              }
+              
+              // Add the reference video file
+              const videoResponse = await fetch(selectedAvatar.video);
+              const videoBlob = await videoResponse.blob();
+              formData.append('reference_video', videoBlob, 'user_video.mp4');
+              
+              // Send request to the local proxy API
+              const response = await fetch('/api/generate-video', {
+                method: 'POST',
+                body: formData,
+              });
+              
+              if (!response.ok) {
+                throw new Error(`Failed to generate video: ${response.statusText}`);
+              }
+              
+              const result = await response.json();
+              
+              // Update stored data with the result
+              localStorage.setItem("generatedVideo", JSON.stringify({
+                ...storedData,
+                avatar: selectedAvatar,
+                videoUrl: result.video_path || "https://3cbe-52-15-120-16.ngrok-free.app/Outputs/GeneratedVideo.mp4",
+                status: "completed"
+              }));
+              
+              localStorage.setItem("videoProcessingStatus", "completed");
+              
+              // Redirect to result page with query params
+              router.push(`/result?text=${encodeURIComponent(storedData.text || "")}&audio=${encodeURIComponent(storedData.voice?.name || "")}&avatar=${encodeURIComponent(selectedAvatar.name || "")}`);
+              
+            } catch (error) {
+              console.error("Error generating video:", error);
+              
+              // Still redirect but with error status
+              localStorage.setItem("videoProcessingStatus", "failed");
+              localStorage.setItem("videoError", error.message);
+              
+              // Redirect to result page anyway
+              const storedData = JSON.parse(localStorage.getItem("generatedVideo") || "{}");
+              router.push(`/result?text=${encodeURIComponent(storedData.text || "")}&audio=${encodeURIComponent(storedData.voice?.name || "")}&avatar=${encodeURIComponent(selectedAvatar.name || "")}`);
             }
+          }
         }
-    };
-
+      };
     const handleBack = () => {
-        router.push("/Home");
+        router.push("/select-voice");
     };
 
     const containerVariants = {

@@ -1,71 +1,113 @@
-"use client";
-  import { useState, useRef } from "react";
+"use client"
+import "@/app/globals.css";
 
-  export default function Home() {
-    const [personId, setPersonId] = useState("");
-    const [files, setFiles] = useState<{ mp4: string | null; npy: string | null; wav: string | null } | null>(null);
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const audioRef = useRef<HTMLAudioElement>(null);
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Loader2, RefreshCw, ImageIcon } from "lucide-react"
 
-    const handleFetchFiles = async () => {
-      if (!personId) return;
-      try {
-        const res = await fetch(`/api/files/${personId}`);
-        if (!res.ok) throw new Error(await res.text());
-        const data = await res.json();
-        setFiles(data);
-        if (data.mp4 && videoRef.current) {
-          videoRef.current.src = `data:video/mp4;base64,${data.mp4}`;
-          videoRef.current.load();
-        }
-        if (data.wav && audioRef.current) {
-          audioRef.current.src = `data:audio/wav;base64,${data.wav}`;
-          audioRef.current.load();
-        }
-      } catch (error) {
-        alert("Error fetching files: " + error);
-      }
-    };
+export default function ResultPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [loading, setLoading] = useState(true)
 
-    return (
-      <div className="p-4">
-        <h1>File Viewer</h1>
-        <div>
-          <input
-            type="number"
-            placeholder="Person ID (e.g., 2, 8)"
-            value={personId}
-            onChange={(e) => setPersonId(e.target.value)}
-            className="border p-2 mr-2"
-          />
-          <button onClick={handleFetchFiles} className="bg-blue-500 text-white p-2">
-            Fetch Files
-          </button>
-        </div>
-        {files && (
-          <div className="mt-4">
-            <h2>Files</h2>
-            {files.mp4 && (
-              <div>
-                <h3>Video</h3>
-                <video ref={videoRef} controls width="600" height="auto" className="border">
-                  <source type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            )}
-            {files.wav && (
-              <div>
-                <h3>Audio</h3>
-                <audio ref={audioRef} src={files.wav} controls className="mt-2">
-                  <source type="audio/wav" />
-                  Your browser does not support the audio tag.
-                </audio>
-              </div>
-            )}
-            {files.npy && <p>NPY data available (base64: {files.npy.substring(0, 20)}...)</p>}
-          </div>
-        )}
-      </div>
-    );
+  // Get parameters from URL
+  const inputText = searchParams.get("text") || "Default text input"
+  const selectedAudio = searchParams.get("audio") || "default-audio"
+  const selectedAvatar = searchParams.get("avatar") || "default-avatar"
+
+  // Simulate video loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const handleCreateAgain = () => {
+    router.push("/")
   }
+
+  const handleCustomBackground = () => {
+    // This would open a modal or redirect to a background selection page
+    alert("Custom background feature would open here")
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12">
+      <div className="container max-w-5xl mx-auto px-4">
+        <h1 className="text-4xl font-bold mb-8 text-center text-blue-600">Your Video is Ready</h1>
+
+        <Card className="shadow-xl border-0 overflow-hidden mb-10">
+          <div className="aspect-video w-full bg-black relative">
+            {loading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-blue-900/10">
+                <div className="text-center">
+                  <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
+                  <p className="text-blue-600 font-medium">Preparing your video...</p>
+                </div>
+              </div>
+            ) : (
+              <video
+                className="w-full h-full object-contain"
+                controls
+                autoPlay
+                poster="/placeholder.svg?height=720&width=1280"
+              >
+                <source src="#" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+
+          <CardContent className="p-8">
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4 text-blue-700">Video Details</h2>
+              <div className="grid gap-3 text-blue-800">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <span className="font-medium">Text Input:</span> {inputText}
+                </div>
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <span className="font-medium">Audio Style:</span> {selectedAudio}
+                </div>
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <span className="font-medium">Avatar:</span> {selectedAvatar}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-14 text-lg font-medium border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                onClick={handleCustomBackground}
+              >
+                <ImageIcon className="mr-2 h-5 w-5" />
+                Set Your Own Custom Background
+              </Button>
+
+              <Button
+                size="lg"
+                className="h-14 text-lg font-medium bg-blue-600 hover:bg-blue-700"
+                onClick={handleCreateAgain}
+              >
+                <RefreshCw className="mr-2 h-5 w-5" />
+                Create Another One
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="text-center text-blue-600 max-w-2xl mx-auto">
+          <p className="text-lg mb-2">Your video has been successfully generated!</p>
+          <p className="text-sm opacity-80">
+            You can download this video, set a custom background, or create a new one with different settings.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}

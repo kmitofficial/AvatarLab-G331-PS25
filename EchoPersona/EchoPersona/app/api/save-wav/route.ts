@@ -27,15 +27,16 @@ export async function POST(req: NextRequest) {
     const audioFilePath = `/audio/${fileName}`;
 
     // Save to user_response_videos
-    const video = await prisma.userResponseVideo.create({
-      data: {
-        userId,
-        username,
-        voiceAudioInput,
-        audioFilePath,
-        responseVideoPath: null, // Now nullable in the database
-      },
-    });
+   // Save to user_response_videos
+const video = await prisma.user_response_videos.create({
+  data: {
+    user_id: userId, // Changed from userId to user_id
+    username,
+    voice_audio_input:voiceAudioInput,
+    audio_file_path:audioFilePath,
+    response_video_path: null, // Now nullable in the database
+  },
+});
 
     return NextResponse.json({ id: video.id, audioFilePath }, { status: 200 });
   } catch (error) {

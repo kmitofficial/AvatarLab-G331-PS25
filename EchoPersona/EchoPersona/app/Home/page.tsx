@@ -1,7 +1,7 @@
 // app/Home/page.tsx
 "use client";
 
-//import "@/app/globals.css";
+import "@/app/globals.css";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -21,7 +21,7 @@ export default function HomePage() {
       setUserId(storedUserId);
     } else {
       console.error("No userId found in localStorage. Redirecting to SignIn.");
-      router.push("/signin");
+      router.push("/Login");
     }
   }, [router]);
 
