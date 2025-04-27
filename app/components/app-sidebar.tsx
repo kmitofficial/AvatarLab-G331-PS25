@@ -1,7 +1,6 @@
-import { Settings, Layers, FileVideo, HelpCircle, Trash, AudioLines, Send, UserRound } from "lucide-react";
+import { Layers, FileVideo, HelpCircle, Trash, Send, Settings} from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroupLabel } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { TopRightIcons } from "./top-right";
 
 type MenuItem = {
   title: string;
@@ -18,8 +17,10 @@ const videos: MenuItem[] = [
 
 
 const others: MenuItem[] = [
-  { title: "Feedback", url: "feedback", icon: Send },
-  { title: "Help & Support", url: "help&support", icon: HelpCircle },
+
+  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Feedback", url: "/feedback", icon: Send },
+  { title: "Help & Support", url: "/help&support", icon: HelpCircle },
 ];
 
 export function AppSidebar() {
@@ -29,7 +30,7 @@ export function AppSidebar() {
         <SidebarMenuButton asChild>
           <Link href={url} className="flex items-center space-x-2">
             <Icon className="h-5 w-5" />
-            <span className="" style={{fontSize:'15px'}}>{title}</span>
+            <span className="font-semibold text-stone-700" style={{fontSize:'15px'}}>{title}</span>
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -43,12 +44,12 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
 
-          <SidebarGroupLabel className="mt-2 text-stone-950">Videos</SidebarGroupLabel>
+          <SidebarGroupLabel className="mt-2 text-stone-500">Videos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(videos)}</SidebarMenu>
           </SidebarGroupContent>
 
-          <SidebarGroupLabel className="mt-2 text-stone-950">Others</SidebarGroupLabel>
+          <SidebarGroupLabel className="mt-2 text-stone-500">Others</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(others)}</SidebarMenu>
           </SidebarGroupContent>

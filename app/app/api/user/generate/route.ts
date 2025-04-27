@@ -4,15 +4,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
     try {
-        const { email, text, audio, video, audio_text } = await req.json();
+        const { email, text, audioId, videoId, audio_text } = await req.json();
 
         const voice = await prisma.voice.findUnique({
-            where: { id: audio },
+            where: { id: audioId },
             select: { audio: true },
         });
 
         const avatar = await prisma.avatar.findUnique({
-            where:{id:video},
+            where:{id:videoId},
             select:{video:true}
         })
 
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
         if (!videoResponse.ok) {
             const errorText = await videoResponse.text();
-            console.error(`DiffDub server failed with status: ${video.status}: ${errorText}`)
+            console.error(`DiffDub server failed with status: ${videoId.status}: ${errorText}`)
             throw new Error(`DiffDub video generation failed: ${errorText}`);
         }
 
