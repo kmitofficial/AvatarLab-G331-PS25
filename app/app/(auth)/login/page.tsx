@@ -7,6 +7,8 @@ import { Lock, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Slide, toast } from "react-toastify";
+import { signIn } from "next-auth/react";
+
 
 export default function SignIn() {
 
@@ -28,7 +30,6 @@ export default function SignIn() {
     }
 
   }
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLogInForm(prev => ({ ...prev, [name]: value }));

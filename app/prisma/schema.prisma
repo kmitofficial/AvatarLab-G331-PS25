@@ -8,17 +8,17 @@ datasource db {
 }
 
 model Avatar {
-  id          String   @id @default(uuid())
-  name        String
-  gender      String
-  video       Bytes
+  id     String @id
+  name   String
+  gender String
+  video  Bytes
 }
 
 model Voice {
-  id        String   @id @default(uuid())
-  name      String
-  text      String
-  gender    String
-  audio     Bytes   
-  language  String
+  id       String @id
+  name     String
+  text     String
+  gender   String
+  audio    Bytes
+  language String
 }
