@@ -6,48 +6,42 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
 
-    // Forward the request to the external Flask API
-    const response = await fetch('https://3cbe-52-15-120-16.ngrok-free.app/generate_video', {
+    // Set up a 10-minute timeout for the fetch request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000000); // 10 minutes (600,000 ms)
+
+    // Forward the request to the external Flask API with timeout
+    const response = await fetch('https://f5ee-18-116-98-203.ngrok-free.app/generate_video', {
       method: 'POST',
       body: formData,
+      signal: controller.signal, // Attach the abort signal
     });
+
+    // Clear the timeout if the request completes
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`Failed to generate video: ${response.statusText}`);
     }
 
-    // Parse the JSON response from Flask
-    const result = await response.json();
+    // The Flask API sends the video file directly, not JSON
+    const videoBuffer = await response.arrayBuffer();
+    const videoFileName = `generated_video_${Date.now()}.mp4`; // Unique filename
+    const videoFilePath = path.join(process.cwd(), 'public', 'videos', videoFileName);
 
-    // Check if video_path is provided and attempt to fetch the video
-    let videoPublicPath = null;
-    if (result.video_path) {
-      const videoUrl = `https://3cbe-52-15-120-16.ngrok-free.app/${result.video_path}`; // Attempt to construct URL
-      const videoResponse = await fetch(videoUrl);
+    // Ensure the videos directory exists
+    await fs.mkdir(path.dirname(videoFilePath), { recursive: true });
 
-      if (videoResponse.ok) {
-        const videoBuffer = await videoResponse.buffer();
-        const videoFileName = `generated_video_${Date.now()}.mp4`; // Unique filename
-        const videoFilePath = path.join(process.cwd(), 'public', 'videos', videoFileName);
+    // Save the video file
+    await fs.writeFile(videoFilePath, Buffer.from(videoBuffer));
 
-        // Ensure the videos directory exists
-        await fs.mkdir(path.dirname(videoFilePath), { recursive: true });
-
-        // Save the video file
-        await fs.writeFile(videoFilePath, videoBuffer);
-
-        // Generate public URL for video
-        videoPublicPath = `/videos/${videoFileName}`;
-      } else {
-        console.warn(`Failed to fetch video from ${videoUrl}. Flask server may not serve ${result.video_path}.`);
-        // Note: This will fail unless Flask serves the Outputs directory statically
-      }
-    }
-
-    // Return the result with the video path if saved, or the original result
+    // Generate public URL for video
+    const videoPublicPath = `/videos/${videoFileName}`;
+    
+    // Return JSON with the path to the generated video
     return NextResponse.json({
-      ...result,
-      videoFilePath: videoPublicPath || result.video_path, // Use saved path or original path
+      success: true,
+      video_path: videoPublicPath
     });
   } catch (error) {
     console.error('Proxy error:', error);

@@ -266,7 +266,7 @@ export default function SelectVoice() {
                     loop
                     playsInline
                     controls={false}
-                    onError={(e) => console.error("Video load error for avatar:", e.target.error)}
+                    onError={(e) => console.error("Video load error for avatar:", e.target)}
                   />
                   <button
                     className="absolute bottom-2 left-2 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 z-10"

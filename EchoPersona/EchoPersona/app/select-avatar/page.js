@@ -153,11 +153,16 @@ export default function SelectAvatar() {
               
               const result = await response.json();
               
+              // Check if the API returned a video path
+              if (!result.video_path && !result.success) {
+                throw new Error("Failed to generate video: No video path received");
+              }
+              
               // Update stored data with the result
               localStorage.setItem("generatedVideo", JSON.stringify({
                 ...storedData,
                 avatar: selectedAvatar,
-                videoUrl: result.video_path || "https://3cbe-52-15-120-16.ngrok-free.app/Outputs/GeneratedVideo.mp4",
+                videoUrl: result.video_path, // Use the path from the API
                 status: "completed"
               }));
               
