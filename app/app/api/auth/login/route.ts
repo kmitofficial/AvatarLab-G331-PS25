@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json( { message: "Invalid Credentials" }, { status: 404 });
     }
 
-    const token = sign({ email }, process.env.JWT_SECRET!, {
+    const token = sign({ email:email,username:user.username,image:user.image }, process.env.JWT_SECRET!, {
       expiresIn: "1h",
     });
 
