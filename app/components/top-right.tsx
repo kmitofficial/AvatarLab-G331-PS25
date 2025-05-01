@@ -1,15 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Bell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { getEmail } from "@/lib/authenticate"
+
 
 export function TopRightIcons() {
   const [notificationCount, setNotificationCount] = useState(0)
+  const [details,setDetails] = useState({email:"",username:""})
+  
+  useEffect(() => {
+    const getDetails = async () =>{
+      const result = await getEmail();
+      console.log(result)
+      if(result) setDetails((prev) => ({...prev,email:result.email,username:result.username}));
+    };
+    getDetails();
+  },[]);
 
   return (
     <div className="flex items-center gap-4">
@@ -56,8 +68,8 @@ export function TopRightIcons() {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium">John Doe</p>
-              <p className="text-xs text-muted-foreground">john.doe@example.com</p>
+              <p className="text-sm font-medium">{details.username}</p>
+              <p className="text-xs text-muted-foreground">{details.email}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

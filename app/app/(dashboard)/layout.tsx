@@ -4,12 +4,14 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { MobileHeader } from "@/components/mobile-header";
 import { TopRightIcons } from "@/components/top-right";
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <ToastContainer/>
       <body className={inter.className}>
         <SidebarProvider>
           <div className="flex h-screen w-full">
