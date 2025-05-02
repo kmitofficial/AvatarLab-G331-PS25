@@ -44,3 +44,10 @@ model user_response_videos {
   created_at          DateTime? @default(now()) @db.Timestamp(6)
   audio_file_path     String?   @db.VarChar(255)
 }
+
+model images {
+  id       Int    @id @default(autoincrement())
+  category String @db.VarChar(100)
+  name     String @db.VarChar(255)
+  file     Bytes
+}

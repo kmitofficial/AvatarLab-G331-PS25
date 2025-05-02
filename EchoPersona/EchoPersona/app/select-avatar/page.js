@@ -169,7 +169,7 @@ export default function SelectAvatar() {
               localStorage.setItem("videoProcessingStatus", "completed");
               
               // Redirect to result page with query params
-              router.push(`/result?text=${encodeURIComponent(storedData.text || "")}&audio=${encodeURIComponent(storedData.voice?.name || "")}&avatar=${encodeURIComponent(selectedAvatar.name || "")}`);
+              router.push(`custom-bg/?text=${encodeURIComponent(storedData.text || "")}&audio=${encodeURIComponent(storedData.voice?.name || "")}&avatar=${encodeURIComponent(selectedAvatar.name || "")}`);
               
             } catch (error) {
               console.error("Error generating video:", error);
@@ -180,7 +180,7 @@ export default function SelectAvatar() {
               
               // Redirect to result page anyway
               const storedData = JSON.parse(localStorage.getItem("generatedVideo") || "{}");
-              router.push(`/result?text=${encodeURIComponent(storedData.text || "")}&audio=${encodeURIComponent(storedData.voice?.name || "")}&avatar=${encodeURIComponent(selectedAvatar.name || "")}`);
+              router.push(`/custom-bg?text=${encodeURIComponent(storedData.text || "")}&audio=${encodeURIComponent(storedData.voice?.name || "")}&avatar=${encodeURIComponent(selectedAvatar.name || "")}`);
             }
           }
         }

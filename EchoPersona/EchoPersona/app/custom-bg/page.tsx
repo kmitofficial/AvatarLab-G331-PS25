@@ -1,230 +1,134 @@
 "use client"
-import "@/app/globals.css"
-
-import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Loader2, ImageIcon, Play, Pause, ChevronLeft, Upload, Lock, Crown, ChevronRight } from "lucide-react"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { Toast } from "@/components/ui/use-toast"
-import Image from "next/image"
-import BackgroundGallery from "@/components/background-gallery"
+import "@/app/globals.css";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Loader2, RefreshCw, ImageIcon, Download, Play, Pause, ChevronLeft, X, Upload, Lock, Crown, ChevronRight } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 
 export default function ResultPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [videoUrl, setVideoUrl] = useState("")
-  const [backgroundType, setBackgroundType] = useState("original")
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
-  const [selectedBackground, setSelectedBackground] = useState<string | null>(null)
-  const [selectedBackgroundId, setSelectedBackgroundId] = useState<number | null>(null)
-  const [galleryOpen, setGalleryOpen] = useState(false)
-  const [activeCategory, setActiveCategory] = useState("nature") // Will be updated dynamically based on available categories
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [processedVideoUrl, setProcessedVideoUrl] = useState<string | null>(null)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [backgroundType, setBackgroundType] = useState("original");
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [selectedBackground, setSelectedBackground] = useState(null);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("nature");
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Get parameters from URL
-  const inputText = searchParams.get("text") || "Default text input"
-  const selectedAudio = searchParams.get("audio") || "default-audio"
-  const selectedAvatar = searchParams.get("avatar") || "default-avatar"
+  const inputText = searchParams.get("text") || "Default text input";
+  const selectedAudio = searchParams.get("audio") || "default-audio";
+  const selectedAvatar = searchParams.get("avatar") || "default-avatar";
+
+  // Example backgrounds object (replace with actual data)
+  const backgrounds = {
+    nature: [
+      { id: 1, name: "Forest", src: "/forest.jpg", premium: false },
+      { id: 2, name: "Beach", src: "/beach.jpg", premium: true },
+    ],
+    office: [
+      { id: 3, name: "Modern Office", src: "/office.jpg", premium: false },
+    ],
+    modern: [],
+    abstract: [],
+  };
 
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("generatedVideo") || "{}")
-    const processingStatus = localStorage.getItem("videoProcessingStatus")
-    const errorMsg = localStorage.getItem("videoError")
+    const storedData = JSON.parse(localStorage.getItem("generatedVideo") || "{}");
+    const processingStatus = localStorage.getItem("videoProcessingStatus");
+    const errorMsg = localStorage.getItem("videoError");
 
     if (processingStatus === "completed" && storedData.videoUrl) {
-      setVideoUrl(storedData.videoUrl)
-      setLoading(false)
+      setVideoUrl(storedData.videoUrl);
+      setLoading(false);
     } else if (processingStatus === "failed") {
-      setError(errorMsg || "Failed to generate video")
-      setLoading(false)
+      setError(errorMsg || "Failed to generate video");
+      setLoading(false);
     } else {
       const checkVideoExists = async () => {
         try {
-          const expectedPath = "/Outputs/GeneratedVideo.mp4"
-          const response = await fetch(expectedPath, { method: "HEAD" })
+          const expectedPath = "/Outputs/GeneratedVideo.mp4";
+          const response = await fetch(expectedPath, { method: "HEAD" });
 
           if (response.ok) {
-            setVideoUrl(expectedPath)
-            setLoading(false)
+            setVideoUrl(expectedPath);
+            setLoading(false);
             localStorage.setItem(
               "generatedVideo",
-              JSON.stringify({ ...storedData, videoUrl: expectedPath, status: "completed" }),
-            )
-            localStorage.setItem("videoProcessingStatus", "completed")
+              JSON.stringify({ ...storedData, videoUrl: expectedPath, status: "completed" })
+            );
+            localStorage.setItem("videoProcessingStatus", "completed");
           } else {
             const pollInterval = setInterval(async () => {
               try {
-                const pollResponse = await fetch(expectedPath, { method: "HEAD" })
+                const pollResponse = await fetch(expectedPath, { method: "HEAD" });
                 if (pollResponse.ok) {
-                  clearInterval(pollInterval)
-                  setVideoUrl(expectedPath)
-                  setLoading(false)
+                  clearInterval(pollInterval);
+                  setVideoUrl(expectedPath);
+                  setLoading(false);
                   localStorage.setItem(
                     "generatedVideo",
-                    JSON.stringify({ ...storedData, videoUrl: expectedPath, status: "completed" }),
-                  )
-                  localStorage.setItem("videoProcessingStatus", "completed")
+                    JSON.stringify({ ...storedData, videoUrl: expectedPath, status: "completed" })
+                  );
+                  localStorage.setItem("videoProcessingStatus", "completed");
                 }
               } catch (err) {
-                console.log("Still checking for video...")
+                console.log("Still checking for video...");
               }
-            }, 5000)
+            }, 5000);
 
             setTimeout(() => {
-              clearInterval(pollInterval)
+              clearInterval(pollInterval);
               if (loading) {
-                setError("Video generation timed out. Please try again.")
-                setLoading(false)
-                localStorage.setItem("videoProcessingStatus", "failed")
+                setError("Video generation timed out. Please try again.");
+                setLoading(false);
+                localStorage.setItem("videoProcessingStatus", "failed");
               }
-            }, 300000)
+            }, 300000);
 
-            return () => clearInterval(pollInterval)
+            return () => clearInterval(pollInterval);
           }
         } catch (err) {
-          console.error("Error checking video:", err)
+          console.error("Error checking video:", err);
         }
-      }
+      };
 
-      checkVideoExists()
+      checkVideoExists();
     }
-  }, [])
+  }, []);
 
   const handleCreateAgain = () => {
-    router.push("/")
-  }
+    router.push("/");
+  };
 
   const handleDownload = () => {
-    const urlToDownload = processedVideoUrl || videoUrl
-
-    if (urlToDownload) {
-      const a = document.createElement("a")
-      a.href = urlToDownload
-      a.download = "generated-video.mp4"
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
+    if (videoUrl) {
+      const a = document.createElement("a");
+      a.href = videoUrl;
+      a.download = "generated-video.mp4";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
-  }
+  };
 
-  const handleSelectBackground = (src: string, id: number) => {
-    setSelectedBackground(src)
-    setSelectedBackgroundId(id)
-    setBackgroundType("gallery")
-    setGalleryOpen(false)
-  }
-
-  const handleApplyBackground = async () => {
-    if (!videoUrl) {
-      Toast({
-        title: "Error",
-        description: "No video available to process",
-        variant: "destructive",
-      })
-      return
+  const selectBackground = (id, src, premium) => {
+    if (!premium) {
+      setSelectedBackground(src);
+      setBackgroundType("gallery");
+      setGalleryOpen(false);
     }
-
-    if (backgroundType === "original") {
-      // No processing needed for original background
-      setProcessedVideoUrl(null)
-      return
-    }
-
-    if (backgroundType === "gallery" && !selectedBackground) {
-      Toast({
-        title: "Error",
-        description: "Please select a background from the gallery",
-        variant: "destructive",
-      })
-      return
-    }
-
-    try {
-      setIsProcessing(true)
-
-      // Create a FormData object to send the files
-      const formData = new FormData()
-
-      // Add the video file
-      // First, we need to fetch the video as a blob
-      const videoResponse = await fetch(videoUrl)
-      const videoBlob = await videoResponse.blob()
-      formData.append("video", videoBlob, "input-video.mp4")
-
-      // Add the background image if using gallery
-      if (backgroundType === "gallery" && selectedBackground) {
-        // For base64 images, we need to convert them to a blob
-        if (selectedBackground.startsWith("data:")) {
-          // Convert base64 to blob
-          const response = await fetch(selectedBackground)
-          const bgBlob = await response.blob()
-          formData.append("bg", bgBlob, "background.png")
-        } else {
-          // For regular URLs, fetch the image first
-          const bgResponse = await fetch(selectedBackground)
-          const bgBlob = await bgResponse.blob()
-          formData.append("bg", bgBlob, "background.png")
-        }
-      }
-
-      // Add metadata about the selected background
-      if (selectedBackgroundId) {
-        formData.append("backgroundId", selectedBackgroundId.toString())
-      }
-
-      // Send the request to our API endpoint
-      const response = await fetch("/api/process-video", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to process video")
-      }
-
-      // Get the processed video as a blob and create a URL for it
-      const processedVideoBlob = await response.blob()
-      const processedUrl = URL.createObjectURL(processedVideoBlob)
-
-      setProcessedVideoUrl(processedUrl)
-
-      // Save the processed video info
-      localStorage.setItem(
-        "processedVideo",
-        JSON.stringify({
-          url: processedUrl,
-          backgroundType,
-          backgroundId: selectedBackgroundId,
-        }),
-      )
-
-      Toast({
-        title: "Success",
-        description: "Background applied successfully!",
-      })
-    } catch (error) {
-      console.error("Error processing video:", error)
-      Toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to process video",
-        variant: "destructive",
-      })
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  // Determine which video URL to display
-  const displayVideoUrl = processedVideoUrl || videoUrl
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-6">
@@ -239,10 +143,10 @@ export default function ResultPage() {
             <div className="lg:col-span-2">
               <div className="relative bg-slate-900 rounded-lg overflow-hidden aspect-video shadow-md">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  {backgroundType === "original" && !processedVideoUrl && (
+                  {backgroundType === "original" && (
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-800 to-slate-700"></div>
                   )}
-                  {backgroundType === "upload" && uploadedImage && !processedVideoUrl && (
+                  {backgroundType === "upload" && uploadedImage && (
                     <Image
                       src={uploadedImage || "/placeholder.svg"}
                       alt="Custom background"
@@ -250,7 +154,7 @@ export default function ResultPage() {
                       className="object-cover"
                     />
                   )}
-                  {backgroundType === "gallery" && selectedBackground && !processedVideoUrl && (
+                  {backgroundType === "gallery" && selectedBackground && (
                     <Image
                       src={selectedBackground || "/placeholder.svg"}
                       alt="Gallery background"
@@ -265,14 +169,6 @@ export default function ResultPage() {
                         <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
                         <p className="text-blue-600 font-medium">Generating your video...</p>
                         <p className="text-blue-400 text-sm mt-2">This may take several minutes</p>
-                      </div>
-                    </div>
-                  ) : isProcessing ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-blue-900/10 z-10">
-                      <div className="text-center">
-                        <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
-                        <p className="text-blue-600 font-medium">Applying background...</p>
-                        <p className="text-blue-400 text-sm mt-2">This may take a moment</p>
                       </div>
                     </div>
                   ) : error ? (
@@ -293,25 +189,25 @@ export default function ResultPage() {
                       className="relative z-10 w-full h-full object-contain"
                       controls
                       autoPlay
-                      src={displayVideoUrl}
+                      src={videoUrl}
                       poster="/placeholder.svg?height=720&width=1280"
                       onPlay={() => setIsPlaying(true)}
                       onPause={() => setIsPlaying(false)}
                     >
-                      <source src={displayVideoUrl} type="video/mp4" />
+                      <source src={videoUrl} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   )}
                 </div>
 
-                {!loading && !error && !isProcessing && (
+                {!loading && !error && (
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 rounded-full px-4 py-2 flex items-center space-x-2">
                     <button
                       onClick={() => {
-                        const video = document.querySelector("video")
+                        const video = document.querySelector("video");
                         if (video) {
-                          if (isPlaying) video.pause()
-                          else video.play()
+                          if (isPlaying) video.pause();
+                          else video.play();
                         }
                       }}
                       className="text-white hover:text-blue-400 transition-colors"
@@ -327,27 +223,7 @@ export default function ResultPage() {
 
               {!loading && !error && (
                 <div className="mt-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-slate-800">Video Details</h2>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" onClick={handleDownload} disabled={isProcessing}>
-                        Download Video
-                      </Button>
-                      <Button
-                        onClick={handleApplyBackground}
-                        disabled={isProcessing || (backgroundType === "gallery" && !selectedBackground)}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Processing...
-                          </>
-                        ) : (
-                          "Apply Background"
-                        )}
-                      </Button>
-                    </div>
-                  </div>
+                  <h2 className="text-xl font-semibold mb-4 text-slate-800">Video Details</h2>
                   <div className="grid gap-3 text-slate-800">
                     <div className="p-3 bg-slate-50 rounded-lg">
                       <span className="font-medium">Text Input:</span> {inputText}
@@ -358,18 +234,6 @@ export default function ResultPage() {
                     <div className="p-3 bg-slate-50 rounded-lg">
                       <span className="font-medium">Avatar:</span> {selectedAvatar}
                     </div>
-                    {processedVideoUrl && (
-                      <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                        <span className="font-medium text-blue-800">Background Applied:</span>{" "}
-                        <span className="text-blue-700">
-                          {backgroundType === "original"
-                            ? "Original Background"
-                            : backgroundType === "gallery" && selectedBackground
-                              ? "Custom Background from Gallery"
-                              : "Custom Background"}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
@@ -445,12 +309,99 @@ export default function ResultPage() {
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[1000px] p-0 overflow-hidden">
-                        <BackgroundGallery
-                          onSelectBackground={handleSelectBackground}
-                          onClose={() => setGalleryOpen(false)}
-                          activeCategory={activeCategory}
-                          setActiveCategory={setActiveCategory}
-                        />
+                        <div className="p-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-xl font-bold">Background Gallery</h3>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setGalleryOpen(false)}
+                              className="text-white hover:bg-blue-700/50 rounded-full"
+                            >
+                              {/* <X size={20} strokeWidth={2.5} /> */}
+                            </Button>
+                          </div>
+                          <p className="text-blue-100 mt-1">Select a background to enhance your video</p>
+                        </div>
+
+                        <div className="p-6">
+                          <Tabs defaultValue="nature" value={activeCategory} onValueChange={setActiveCategory}>
+                            <TabsList className="mb-6 bg-slate-100 p-1">
+                              <TabsTrigger value="nature" className="data-[state=active]:bg-white">
+                                Nature
+                              </TabsTrigger>
+                              <TabsTrigger value="office" className="data-[state=active]:bg-white">
+                                Office
+                              </TabsTrigger>
+                              <TabsTrigger value="modern" className="data-[state=active]:bg-white">
+                                Modern
+                              </TabsTrigger>
+                              <TabsTrigger value="abstract" className="data-[state=active]:bg-white">
+                                Abstract
+                              </TabsTrigger>
+                            </TabsList>
+
+                            <ScrollArea className="h-[400px] pr-4">
+                              {Object.entries(backgrounds).map(([category, items]) => (
+                                <TabsContent key={category} value={category} className="m-0">
+                                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {items.map((bg) => (
+                                      <div
+                                        key={bg.id}
+                                        className={`relative group rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
+                                          selectedBackground === bg.src && backgroundType === "gallery"
+                                            ? "ring-2 ring-blue-500 ring-offset-2"
+                                            : "hover:shadow-md"
+                                        }`}
+                                        onClick={() => selectBackground(bg.id, bg.src, bg.premium)}
+                                      >
+                                        <Image
+                                          src={bg.src || "/placeholder.svg"}
+                                          alt={bg.name}
+                                          width={300}
+                                          height={200}
+                                          className="w-full aspect-video object-cover transition-transform group-hover:scale-105"
+                                        />
+
+                                        {bg.premium && (
+                                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                            <div className="text-center p-2">
+                                              <Lock className="h-6 w-6 text-white mx-auto" />
+                                              <span className="text-xs font-medium text-white block mt-1">Premium</span>
+                                              <Button size="sm" variant="secondary" className="mt-2 text-xs">
+                                                <Crown className="h-3 w-3 mr-1" />
+                                                Upgrade
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        <div className="p-2 bg-white">
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium text-slate-700">{bg.name}</p>
+                                            {bg.premium && (
+                                              <Badge
+                                                variant="outline"
+                                                className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]"
+                                              >
+                                                PREMIUM
+                                              </Badge>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </TabsContent>
+                              ))}
+                            </ScrollArea>
+                          </Tabs>
+                        </div>
+                        <div className="p-4 border-t border-slate-200 flex justify-end">
+                          <Button variant="outline" onClick={() => setGalleryOpen(false)}>
+                            <X size={16} className="mr-2" /> Close Gallery
+                          </Button>
+                        </div>
                       </DialogContent>
                     </Dialog>
 

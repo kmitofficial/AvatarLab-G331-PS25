@@ -11,7 +11,7 @@ export async function POST(req) {
     const timeoutId = setTimeout(() => controller.abort(), 60000000); // 10 minutes (600,000 ms)
 
     // Forward the request to the external Flask API with timeout
-    const response = await fetch('https://f5ee-18-116-98-203.ngrok-free.app/generate_video', {
+    const response = await fetch('https://ea78-3-144-195-139.ngrok-free.app/generate_video', {
       method: 'POST',
       body: formData,
       signal: controller.signal, // Attach the abort signal

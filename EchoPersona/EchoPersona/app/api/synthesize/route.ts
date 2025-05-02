@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    const response = await fetch('https://fab2-35-238-243-44.ngrok-free.app/synthesize', {
+    const response = await fetch('https://3bef-35-232-104-231.ngrok-free.app/synthesize', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
