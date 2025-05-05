@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     const formData = await request.formData()
 
     // Get the Flask API URL from environment variable or use a default
-    const apiUrl = process.env.FLASK_API_URL || " https://b6c7-3-236-234-38.ngrok-free.app"
+    const apiUrl = process.env.FLASK_API_URL || "https://7f3b-44-200-22-7.ngrok-free.app"
 
     // Log the request for debugging
     console.log("Sending request to Flask API:", apiUrl)
