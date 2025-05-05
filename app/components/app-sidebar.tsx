@@ -15,7 +15,10 @@ const videos: MenuItem[] = [
   
 ];
 
-
+const premium: MenuItem[] = [
+  {title: "Create avatar",url: "/createAvatar",icon:UserRound },
+  {title: "Create voice",url: "/createVoice",icon:AudioLines },
+];
 const others: MenuItem[] = [
 
   { title: "Settings", url: "/settings", icon: Settings },
@@ -49,12 +52,18 @@ export function AppSidebar() {
             <SidebarMenu>{renderItems(videos)}</SidebarMenu>
           </SidebarGroupContent>
 
-          <SidebarGroupLabel className="mt-2 text-stone-500">Others</SidebarGroupLabel>
+          <SidebarGroupLabel className="mt-2 text-stone-950">Premium</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{renderItems(premium)}</SidebarMenu>
+          </SidebarGroupContent>
+          
+
+          <SidebarGroupLabel className="mt-2 text-stone-950">Others</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(others)}</SidebarMenu>
           </SidebarGroupContent>
           
-        </SidebarGroup>
+        </SidebarGroup> 
       </SidebarContent>
     </Sidebar>
   );

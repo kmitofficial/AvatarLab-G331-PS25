@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react"
 import { Bell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { getEmail } from "@/lib/authenticate"
@@ -12,13 +11,17 @@ import { getEmail } from "@/lib/authenticate"
 
 export function TopRightIcons() {
   const [notificationCount, setNotificationCount] = useState(0)
-  const [details,setDetails] = useState({email:"",username:""})
+  const [details,setDetails] = useState({email:"",username:"",image:""})
+  const [profilePhoto, setProfilePhoto] = useState("")
   
   useEffect(() => {
     const getDetails = async () =>{
       const result = await getEmail();
       console.log(result)
-      if(result) setDetails((prev) => ({...prev,email:result.email,username:result.username}));
+      if(result){
+      if(result) setDetails((prev) => ({...prev,email:result.email,username:result.username,image:result.image}));
+      setProfilePhoto(result.image);
+      }
     };
     getDetails();
   },[]);
@@ -61,9 +64,34 @@ export function TopRightIcons() {
       {/*User Profile*/}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-blue-500 p-0 text-white">
-            <span className="text-sm font-medium">J</span>
-          </Button>
+        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full p-0">
+  {profilePhoto ? (
+    <div
+      className="h-8 w-8 rounded-full bg-center bg-cover bg-no-repeat"
+      style={{
+        backgroundImage: `url(${profilePhoto})`,
+      }}
+    />
+  ) : (
+    <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 text-gray-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1}
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        />
+      </svg>
+    </div>
+  )}
+</Button>
+
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel className="font-normal">

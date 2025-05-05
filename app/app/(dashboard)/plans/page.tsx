@@ -61,7 +61,7 @@ export default function PlansPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col font-sans p-4 md:p-8">
+    <main className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col font-sans p-4 md:p-8">
       <div className="max-w-6xl mx-auto w-full">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">

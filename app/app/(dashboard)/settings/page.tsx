@@ -52,7 +52,6 @@ export default function SettingsPage() {
     }
     const getDetails = async () => {
       const result = await getEmail()
-      console.log(result);
       if (result){
         setDetails((prev) => ({ ...prev, email: result.email, username: result.username ,image : result.image}))
         setProfilePhoto(result.image);
@@ -302,7 +301,7 @@ export default function SettingsPage() {
                     </Select>
                   </div>
 
-                    <Button type="submit" className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button type="submit" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
                       Save Profile
                     </Button>
                   </div>
@@ -328,7 +327,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="mt-6 flex gap-4">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => Router.push('/plans')}>Upgrade Plan</Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:bg-gradient-to-r hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-md" onClick={() => Router.push('/plans')}>Upgrade Plan</Button>
                 <Button variant="outline">Billing History</Button>
               </div>
             </section>
