@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 type Avatar = { id: string; name: string; gender: string; video: string; }
 type Voice = { id: string; name: string; gender: string; audio: string; text: string };
 
-export default function WorkspacePage() {
+export default function WorkspacePage(){
   const [currentStep, setCurrentStep] = useState(1)
 
   const [generateForm, setGenerateForm] = React.useState({ email:"nikhilesh@gmail.com" , text: "", videoId: "", audioId: "", audio_text: "" });

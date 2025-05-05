@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Lock, Mail, UserRound } from "lucide-react";
 import React from "react";
-import { toast ,Slide } from 'react-toastify'
+import { toast , Slide } from 'react-toastify'
 import { useRouter } from "next/navigation";
 
 export default function SignIn() {

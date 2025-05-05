@@ -22,3 +22,22 @@ model Voice {
   audio    Bytes
   language String
 }
+
+model UserAvatar {
+  id             String @id @default(uuid())
+  name           String
+  gender         String
+  video          Bytes
+  userIdentifier String
+}
+
+model UserVoice {
+  id              String @id @default(uuid())
+  name            String
+  text_normalized String
+  gender          String
+  audio           Bytes
+  language        String
+  userIdentifier String
+
+}
