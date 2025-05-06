@@ -18,13 +18,14 @@ export default function MyVideosPage() {
 
   React.useEffect(() => {
     const retrieveVideos = async () => {
-      const email = await getEmail()
+      const result = await getEmail();
       const response = await fetch('/api/user/videos', {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        headers:{'Content-Type': 'application/json'},
+        body: JSON.stringify({ email:result?.email }),
       })
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         setVideos(data)
       }
     }

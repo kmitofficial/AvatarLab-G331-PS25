@@ -372,12 +372,12 @@ export default function UploadAvatarPage() {
 
         <div className="grid md:grid-cols-5 gap-8">
           <div className="md:col-span-2">
-            <Card className="h-full border-blue-200 shadow-md">
-              <CardHeader className="bg-blue-50 border-b border-blue-100">
-                <CardTitle className="text-xl font-bold text-blue-700">Instructions</CardTitle>
+            <Card className="p-0 rounded-sm h-full border-blue-200 shadow-md">
+              <CardHeader className="rounded-sm bg-blue-50 border-b border-blue-100">
+                <CardTitle className="mt-3 text-xl font-bold text-blue-700">Instructions</CardTitle>
                 <CardDescription className="text-blue-600">Follow these steps for best results</CardDescription>
               </CardHeader>
-              <CardContent className="pt-6 space-y-4">
+              <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="bg-blue-100 rounded-full p-1 mt-0.5">
                     <span className="flex items-center justify-center h-5 w-5 text-xs font-bold rounded-full bg-blue-600 text-white">
@@ -436,7 +436,7 @@ export default function UploadAvatarPage() {
 
                 <Separator className="my-4 bg-blue-100" />
 
-                <Alert className="bg-blue-50 border-blue-200">
+                <Alert className="mb-4 bg-blue-50 border-blue-200">
                   <Info className="h-4 w-4 text-blue-600" />
                   <AlertTitle className="text-blue-700">Recording Tips</AlertTitle>
                   <AlertDescription className="text-blue-600 text-sm">
@@ -453,14 +453,14 @@ export default function UploadAvatarPage() {
           </div>
 
           <div className="md:col-span-3">
-            <Card className="border-blue-200 shadow-md">
-              <CardHeader className="bg-blue-50 border-b border-blue-100">
-                <CardTitle className="text-xl font-bold text-blue-700">Record Your Avatar</CardTitle>
+            <Card className="p-0 rounded-sm border-blue-200 shadow-md">
+              <CardHeader className="rounded-sm bg-blue-50 border-b border-blue-100">
+                <CardTitle className="text-xl mt-3 font-bold text-blue-700">Record Your Avatar</CardTitle>
                 <CardDescription className="text-blue-600">
                   Record a video of your face and fill in the details
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="">
                 <form id="upload-avatar-form" onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="text-blue-700">
@@ -559,7 +559,7 @@ export default function UploadAvatarPage() {
                   </div>
                 </form>
               </CardContent>
-              <CardFooter className="bg-blue-50 border-t border-blue-100 flex justify-end gap-3">
+              <CardFooter className="p-4 bg-blue-50 border-t border-blue-100 flex justify-end gap-3">
                 <Button
                   type="button"
                   variant="outline"

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from '@/lib/prisma';
 
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -8,7 +9,6 @@ export async function POST(req: NextRequest) {
     const videoFile = formData.get('video') as File | null;
     const name = formData.get('name') as string;
     const gender = formData.get('gender') as string;
-    const userIdentifier = formData.get("userIdentifier") as string;
 
     if (!videoFile || !name) {
       return NextResponse.json({ message: 'Missing fields' }, { status: 400 });
@@ -16,17 +16,11 @@ export async function POST(req: NextRequest) {
 
     const videoBuffer = Buffer.from(await videoFile.arrayBuffer());
 
-    const saved = await prisma.userAvatar.create({
-      data: {
-        id: crypto.randomUUID(),
-        name,
-        gender,
-        video: videoBuffer,
-        userIdentifier,
-      },
+    const saved = await prisma.avatar.create({
+      data: { name, gender, video: videoBuffer,},
     });
 
-    return NextResponse.json({success: true, message: 'Video saved', id: saved.id }, { status: 200 });
+    return NextResponse.json({ message: 'Video saved', id: saved.id }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'Server Error' }, { status: 500 });
