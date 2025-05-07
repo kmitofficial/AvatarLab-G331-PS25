@@ -57,9 +57,9 @@ export default function MyVideosPage() {
   })
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto p-2">
       <div className="mb-6">
-        <h1 className="fontfamily text-3xl font-semibold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-medium bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
           My Videos
         </h1>
         <p className="text-muted-foreground">Manage your generated videos</p>
@@ -94,7 +94,7 @@ export default function MyVideosPage() {
         {sortedVideos.map((video) => (
           <div
             key={video.id}
-            className="flex items-center gap-4 rounded-sm border border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors shadow-sm"
+            className="flex items-center gap-4 rounded-sm border hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors shadow-md"
           >
             <div className="relative h-25 w-36 overflow-hidden">
               <video

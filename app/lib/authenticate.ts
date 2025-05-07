@@ -5,12 +5,10 @@ export const getEmail = () => {
   console.log(document.cookie)
   const cookie = parse(document.cookie);
   const token = cookie.token;
-  console.log(token)
   if (!token) return null;
 
   try {
     const decoded = jwtDecode(token) as { email: string,username:string,image:string };
-    console.log(decoded)
     return {email:decoded.email,username:decoded.username,image:decoded.image};
   } catch {
     return null;

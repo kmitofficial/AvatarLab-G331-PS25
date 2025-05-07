@@ -34,7 +34,7 @@ export function AppSidebar() {
         <SidebarMenuButton asChild>
           <Link href={url} className="flex items-center space-x-2">
             <Icon className="h-5 w-5" />
-            <span className="font-medium text-stone-700" style={{fontSize:'15px'}}>{title}</span>
+            <span className="font-medium" style={{fontSize:'15px'}}>{title}</span>
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>

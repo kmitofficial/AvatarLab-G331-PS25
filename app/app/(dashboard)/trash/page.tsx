@@ -69,7 +69,7 @@ export default function TrashPage() {
   return (
     <div className="container mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-medium bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
           Trash
         </h1>
         <p className="text-muted-foreground">Items in trash will be permanently deleted after 30 days</p>

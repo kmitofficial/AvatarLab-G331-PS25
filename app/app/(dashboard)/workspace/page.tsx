@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { getEmail } from "@/lib/authenticate"
 
 type Avatar = { id: string; name: string; gender: string; video: string; }
 type Voice = { id: string; name: string; gender: string; audio: string; text: string };
@@ -17,7 +18,7 @@ type Voice = { id: string; name: string; gender: string; audio: string; text: st
 export default function WorkspacePage(){
   const [currentStep, setCurrentStep] = useState(1)
 
-  const [generateForm, setGenerateForm] = React.useState({ email:"nikhilesh@gmail.com" , text: "", videoId: "", audioId: "", audio_text: "" });
+  const [generateForm, setGenerateForm] = React.useState({ email:"" , text: "", videoId: "", audioId: "", audio_text: "" });
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [preview, setPreview] = useState("")
@@ -103,6 +104,8 @@ export default function WorkspacePage(){
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    const result = await getEmail();
+    setGenerateForm((prev) =>({...prev,email:result!.email}));
     const response = await fetch('/api/user/generate', {
       method: 'POST',
       body: JSON.stringify(generateForm)
@@ -129,7 +132,7 @@ export default function WorkspacePage(){
             <div className="max-w-4xl mx-auto">
               <div className="transition-all duration-300">
                 <div className="mb-6 text-center">
-                  <p className="text-base text-center max-w-2xl mx-auto">
+                  <p className="text-muted-foreground text-center max-w-2xl mx-auto">
                     Enter your text below to create a realistic talking head video with synchronized lip movements
                   </p>
                 </div>
@@ -166,8 +169,8 @@ export default function WorkspacePage(){
       {/* Step 2: Select Avatar */}
       {currentStep === 2 && (
         <div className="container mx-auto">
-          <div className="mb-6">
-            <h1 style={{fontFamily:"sans-serif"}} className="text-3xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Select an Avatar
             </h1>
             <p className="text-muted-foreground text-sm">{currentStep < 4 ? `Step ${currentStep} of 3` : "Your video is ready"}</p>
@@ -175,7 +178,7 @@ export default function WorkspacePage(){
           <div className="max-w-4xl mx-auto">
             <div className="transition-all duration-300">
               <div className="mb-6">
-                <p className="text-base text-center max-w-2xl mx-auto">
+                <p className="text-muted-foreground text-center max-w-2xl mx-auto">
                   Choose the character that will deliver your message
                 </p>
               </div>
@@ -250,8 +253,8 @@ export default function WorkspacePage(){
       {/* Step 3: Select Voice */}
       {currentStep === 3 && (
         <div className="container mx-auto">
-          <div className="mb-6">
-            <h1 className="text-3xl fontfamily font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Choose a Voice
             </h1>
             <p className="text-muted-foreground text-sm">{currentStep < 4 ? `Step ${currentStep} of 3` : "Your video is ready"}</p>
@@ -259,7 +262,7 @@ export default function WorkspacePage(){
           <div className="max-w-4xl mx-auto">
             <div className="transition-all duration-300">
               <div className="mb-6">
-                <p className="text-base text-center max-w-2xl mx-auto">Select the voice that will be used for your video</p>
+                <p className="text-muted-foreground text-center max-w-2xl mx-auto">Select the voice that will be used for your video</p>
               </div>
 
               <div className="space-y-3 mb-6">
