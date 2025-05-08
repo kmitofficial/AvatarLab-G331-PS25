@@ -25,8 +25,11 @@ export default function WorkspacePage(){
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const [avatar, setAvatars] = useState<Avatar[]>([]);
-  const [voice, setVoices] = useState<Voice[]>([]);
+  const [preDefinedAvatar, setpreDefinedAvatars] = useState<Avatar[]>([]);
+  const [userAvatars,setUserAvatars] = useState<Avatar[]>();
+
+  const [preDefinedVoice, setpreDefinedVoices] = useState<Voice[]>([]);
+  const [userVoice, setUserVoices] = useState<Voice[]>([]);
 
   const [playingVideo, setPlayingVideo] = useState<Record<string, boolean>>({})
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
@@ -38,15 +41,19 @@ export default function WorkspacePage(){
 
   React.useEffect(() => {
     const fetchAvatars = async () => {
-      const res = await fetch('/api/dev/avatars');
-      const data = await res.json();
-      setAvatars(data);
+      const result = await getEmail();
+      const res = await fetch('/api/dev/avatars',{method:"POST",body:JSON.stringify({email:result?.email})})
+      const {predefined,user} = await res.json();
+      setpreDefinedAvatars(predefined);
+      setUserAvatars(user);
     };
 
     const fetchVoices = async () => {
-      const res = await fetch('/api/dev/voices');
-      const data = await res.json();
-      setVoices(data);
+      const result = await getEmail();
+      const res = await fetch('/api/dev/voices',{method:"POST",body:JSON.stringify({email:result?.email})});
+      const {predefined,user} = await res.json();
+      setpreDefinedVoices(predefined)
+      setUserVoices(user);
     }
 
     fetchAvatars();
@@ -184,7 +191,7 @@ export default function WorkspacePage(){
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                {avatar.map((avatar) => (
+                {preDefinedAvatar.map((avatar) => (
                   <Card
                     key={avatar.id}
                     onClick={() => setGenerateForm(prev => ({ ...prev, videoId: avatar.id }))}
@@ -266,7 +273,7 @@ export default function WorkspacePage(){
               </div>
 
               <div className="space-y-3 mb-6">
-                {voice.map((voice) => (
+                {preDefinedVoice.map((voice) => (
                   <Card
                     key={voice.id}
                     className={`p-0 rounded-none shadow-md overflow-hidden transition-all
