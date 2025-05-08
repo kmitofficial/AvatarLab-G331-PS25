@@ -22,9 +22,9 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="container mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+    <div className="container mx-auto p-2">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Feedback
         </h1>
         <p className="text-muted-foreground">Help us improve Avatar Lab with your feedback</p>

@@ -7,7 +7,6 @@ export async function POST(req:NextRequest) {
     try {
         const { db } = await connectMDB();
         const { email } = await req.json();
-        console.log(email)
         const bucket = new GridFSBucket(db, { bucketName: "videos" });
         const files = await db.collection("videos.files").find({ "metadata.email": email }).toArray();
         const videoData = await Promise.all(

@@ -27,9 +27,9 @@ const guideItems = [
 
 export default function HelpPage() {
   return (
-    <div className="container mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Help & Support</h1>
+    <div className="container mx-auto p-2">
+      <div className="mb-6 text-center">
+        <h1 className="text-3xl font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Help & Support</h1>
         <p className="text-muted-foreground">Find answers to your questions and get support</p>
       </div>
       <Tabs defaultValue="faq" className="space-y-6">
@@ -59,7 +59,7 @@ export default function HelpPage() {
           <Card className="rounded-none">
             <CardHeader><CardTitle>User Guides</CardTitle><CardDescription>Step-by-step guides to help you get the most out of Avatar Lab</CardDescription></CardHeader>
             <CardContent>
-              <div className="p-0 grid gap-4 sm:grid-cols-2 sm:grid-cols-4">
+              <div className="p-0 grid gap-4 sm:grid-cols-4">
                 {guideItems.map((g, i) => (
                   <Card key={i} className="p-0 rounded-sm cursor-pointer hover:shadow-md transition-shadow">
                     <CardHeader className="p-4"><CardTitle className="text-lg">{g.title}</CardTitle></CardHeader>

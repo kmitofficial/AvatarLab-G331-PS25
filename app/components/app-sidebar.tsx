@@ -1,4 +1,4 @@
-import { Layers, FileVideo, HelpCircle, Trash, Send, Settings} from "lucide-react";
+import { Layers, FileVideo, AudioLines,UserRound,HelpCircle, Trash, Send, Settings} from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroupLabel } from "@/components/ui/sidebar";
 import Link from "next/link";
 
@@ -16,9 +16,10 @@ const videos: MenuItem[] = [
 ];
 
 const premium: MenuItem[] = [
-  {title: "Create avatar",url: "/createAvatar",icon:UserRound },
-  {title: "Create voice",url: "/createVoice",icon:AudioLines },
+  {title: "Create Avatar",url: "/createAvatar",icon:UserRound },
+  {title: "Create Voice",url: "/createVoice",icon:AudioLines },
 ];
+
 const others: MenuItem[] = [
 
   { title: "Settings", url: "/settings", icon: Settings },
@@ -33,7 +34,7 @@ export function AppSidebar() {
         <SidebarMenuButton asChild>
           <Link href={url} className="flex items-center space-x-2">
             <Icon className="h-5 w-5" />
-            <span className="font-semibold text-stone-700" style={{fontSize:'15px'}}>{title}</span>
+            <span className="font-medium" style={{fontSize:'15px'}}>{title}</span>
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -47,7 +48,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
 
-          <SidebarGroupLabel className="mt-2 text-stone-500">Videos</SidebarGroupLabel>
+          <SidebarGroupLabel className="mt-2 text-stone-950">Videos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(videos)}</SidebarMenu>
           </SidebarGroupContent>

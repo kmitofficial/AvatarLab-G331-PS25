@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { getEmail } from "@/lib/authenticate"
 
 type Avatar = { id: string; name: string; gender: string; video: string; }
 type Voice = { id: string; name: string; gender: string; audio: string; text: string };
@@ -17,15 +18,18 @@ type Voice = { id: string; name: string; gender: string; audio: string; text: st
 export default function WorkspacePage(){
   const [currentStep, setCurrentStep] = useState(1)
 
-  const [generateForm, setGenerateForm] = React.useState({ email:"nikhilesh@gmail.com" , text: "", videoId: "", audioId: "", audio_text: "" });
+  const [generateForm, setGenerateForm] = React.useState({ email:"" , text: "", videoId: "", audioId: "", audio_text: "" });
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [preview, setPreview] = useState("")
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const [avatar, setAvatars] = useState<Avatar[]>([]);
-  const [voice, setVoices] = useState<Voice[]>([]);
+  const [preDefinedAvatar, setpreDefinedAvatars] = useState<Avatar[]>([]);
+  const [userAvatars,setUserAvatars] = useState<Avatar[]>();
+
+  const [preDefinedVoice, setpreDefinedVoices] = useState<Voice[]>([]);
+  const [userVoice, setUserVoices] = useState<Voice[]>([]);
 
   const [playingVideo, setPlayingVideo] = useState<Record<string, boolean>>({})
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
@@ -37,15 +41,19 @@ export default function WorkspacePage(){
 
   React.useEffect(() => {
     const fetchAvatars = async () => {
-      const res = await fetch('/api/dev/avatars');
-      const data = await res.json();
-      setAvatars(data);
+      const result = await getEmail();
+      const res = await fetch('/api/dev/avatars',{method:"POST",body:JSON.stringify({email:result?.email})})
+      const {predefined,user} = await res.json();
+      setpreDefinedAvatars(predefined);
+      setUserAvatars(user);
     };
 
     const fetchVoices = async () => {
-      const res = await fetch('/api/dev/voices');
-      const data = await res.json();
-      setVoices(data);
+      const result = await getEmail();
+      const res = await fetch('/api/dev/voices',{method:"POST",body:JSON.stringify({email:result?.email})});
+      const {predefined,user} = await res.json();
+      setpreDefinedVoices(predefined)
+      setUserVoices(user);
     }
 
     fetchAvatars();
@@ -103,6 +111,8 @@ export default function WorkspacePage(){
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    const result = await getEmail();
+    setGenerateForm((prev) =>({...prev,email:result!.email}));
     const response = await fetch('/api/user/generate', {
       method: 'POST',
       body: JSON.stringify(generateForm)
@@ -129,7 +139,7 @@ export default function WorkspacePage(){
             <div className="max-w-4xl mx-auto">
               <div className="transition-all duration-300">
                 <div className="mb-6 text-center">
-                  <p className="text-base text-center max-w-2xl mx-auto">
+                  <p className="text-muted-foreground text-center max-w-2xl mx-auto">
                     Enter your text below to create a realistic talking head video with synchronized lip movements
                   </p>
                 </div>
@@ -166,8 +176,8 @@ export default function WorkspacePage(){
       {/* Step 2: Select Avatar */}
       {currentStep === 2 && (
         <div className="container mx-auto">
-          <div className="mb-6">
-            <h1 style={{fontFamily:"sans-serif"}} className="text-3xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Select an Avatar
             </h1>
             <p className="text-muted-foreground text-sm">{currentStep < 4 ? `Step ${currentStep} of 3` : "Your video is ready"}</p>
@@ -175,13 +185,13 @@ export default function WorkspacePage(){
           <div className="max-w-4xl mx-auto">
             <div className="transition-all duration-300">
               <div className="mb-6">
-                <p className="text-base text-center max-w-2xl mx-auto">
+                <p className="text-muted-foreground text-center max-w-2xl mx-auto">
                   Choose the character that will deliver your message
                 </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                {avatar.map((avatar) => (
+                {preDefinedAvatar.map((avatar) => (
                   <Card
                     key={avatar.id}
                     onClick={() => setGenerateForm(prev => ({ ...prev, videoId: avatar.id }))}
@@ -250,8 +260,8 @@ export default function WorkspacePage(){
       {/* Step 3: Select Voice */}
       {currentStep === 3 && (
         <div className="container mx-auto">
-          <div className="mb-6">
-            <h1 className="text-3xl fontfamily font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Choose a Voice
             </h1>
             <p className="text-muted-foreground text-sm">{currentStep < 4 ? `Step ${currentStep} of 3` : "Your video is ready"}</p>
@@ -259,11 +269,11 @@ export default function WorkspacePage(){
           <div className="max-w-4xl mx-auto">
             <div className="transition-all duration-300">
               <div className="mb-6">
-                <p className="text-base text-center max-w-2xl mx-auto">Select the voice that will be used for your video</p>
+                <p className="text-muted-foreground text-center max-w-2xl mx-auto">Select the voice that will be used for your video</p>
               </div>
 
               <div className="space-y-3 mb-6">
-                {voice.map((voice) => (
+                {preDefinedVoice.map((voice) => (
                   <Card
                     key={voice.id}
                     className={`p-0 rounded-none shadow-md overflow-hidden transition-all
