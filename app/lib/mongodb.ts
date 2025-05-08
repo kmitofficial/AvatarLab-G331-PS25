@@ -1,7 +1,9 @@
 import { MongoClient, Db } from "mongodb";
 
-const uri = process.env.MONGO_URL!;
-const dbName = process.env.DATABASE!;
+// const uri = process.env.MONGO_URL!;
+// const dbName = process.env.DATABASE!;
+const uri = 'mongodb://localhost:27017/';
+const dbName = 'turbo';
 
 if (!uri || !dbName) {
   throw new Error("Missing MONGODB_URL or DATABASE in environment variables");

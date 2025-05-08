@@ -8,8 +8,7 @@ import { Loader2, ImageIcon, Play, Pause, ChevronLeft, Upload, Lock, Crown, Chev
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { Toast } from "@/components/ui/use-toast"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import Image from "next/image"
 import BackgroundGallery from "@/components/background-gallery"
 
@@ -28,6 +27,28 @@ export default function ResultPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [processedVideoUrl, setProcessedVideoUrl] = useState<string | null>(null)
+  const [videoSelectionOpen, setVideoSelectionOpen] = useState(true)
+  const [availableVideos, setAvailableVideos] = useState([
+    {
+      id: 1,
+      title: "Nature Exploration",
+      thumbnail: "/placeholder.svg?height=180&width=320",
+      url: "/Outputs/GeneratedVideo.mp4",
+    },
+    {
+      id: 2,
+      title: "Tech Presentation",
+      thumbnail: "/placeholder.svg?height=180&width=320",
+      url: "/Outputs/GeneratedVideo2.mp4",
+    },
+    {
+      id: 3,
+      title: "Product Demo",
+      thumbnail: "/placeholder.svg?height=180&width=320",
+      url: "/Outputs/GeneratedVideo3.mp4",
+    },
+  ])
+  const [selectedVideoId, setSelectedVideoId] = useState<number | null>(null)
 
   // Get parameters from URL
   const inputText = searchParams.get("text") || "Default text input"
@@ -122,13 +143,23 @@ export default function ResultPage() {
     setGalleryOpen(false)
   }
 
+  const handleSelectVideo = (videoId: number) => {
+    const selectedVideo = availableVideos.find((video) => video.id === videoId)
+    if (selectedVideo) {
+      setSelectedVideoId(videoId)
+      setVideoUrl(selectedVideo.url)
+      setLoading(false)
+      setVideoSelectionOpen(false)
+
+      // Save to localStorage
+      localStorage.setItem("generatedVideo", JSON.stringify({ videoUrl: selectedVideo.url, status: "completed" }))
+      localStorage.setItem("videoProcessingStatus", "completed")
+    }
+  }
+
   const handleApplyBackground = async () => {
     if (!videoUrl) {
-      Toast({
-        title: "Error",
-        description: "No video available to process",
-        variant: "destructive",
-      })
+      console.error("No video available to process")
       return
     }
 
@@ -139,11 +170,7 @@ export default function ResultPage() {
     }
 
     if (backgroundType === "gallery" && !selectedBackground) {
-      Toast({
-        title: "Error",
-        description: "Please select a background from the gallery",
-        variant: "destructive",
-      })
+      console.error("Please select a background from the gallery")
       return
     }
 
@@ -207,17 +234,9 @@ export default function ResultPage() {
         }),
       )
 
-      Toast({
-        title: "Success",
-        description: "Background applied successfully!",
-      })
+      console.log("Background applied successfully!")
     } catch (error) {
       console.error("Error processing video:", error)
-      Toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to process video",
-        variant: "destructive",
-      })
     } finally {
       setIsProcessing(false)
     }
@@ -228,6 +247,44 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-6">
+      {/* Video Selection Dialog */}
+      <Dialog open={videoSelectionOpen} onOpenChange={setVideoSelectionOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogTitle>Select a Video</DialogTitle>
+          <DialogDescription>Choose a video from the list below to customize and preview.</DialogDescription>
+          <div className="mt-4 border rounded-lg overflow-hidden">
+            <div className="bg-slate-50 py-2 px-4 border-b font-medium">Available Videos</div>
+            <div className="divide-y">
+              {availableVideos.map((video) => (
+                <div
+                  key={video.id}
+                  className={`flex items-center p-3 cursor-pointer hover:bg-slate-50 transition-colors ${
+                    selectedVideoId === video.id ? "bg-blue-50" : ""
+                  }`}
+                  onClick={() => handleSelectVideo(video.id)}
+                >
+                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mr-3">
+                    {selectedVideoId === video.id ? (
+                      <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+                    ) : (
+                      <div className="w-4 h-4 rounded-full border-2 border-slate-300"></div>
+                    )}
+                  </div>
+                  <div className="flex-grow">
+                    <h3 className="font-medium">{video.title}</h3>
+                    <p className="text-xs text-slate-500">Video #{video.id}</p>
+                  </div>
+                  <Play className="w-5 h-5 text-slate-400" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <Button onClick={() => handleSelectVideo(availableVideos[0].id)}>Continue with Selected Video</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="mx-auto max-w-7xl bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="p-6 md:p-8">
           <h1 className="text-2xl font-bold text-slate-800 mb-6">

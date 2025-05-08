@@ -1,4 +1,4 @@
-import { Layers, FileVideo, AudioLines,UserRound,HelpCircle, Trash, Send, Settings} from "lucide-react";
+import { UserRound,AudioLines,Layers, FileVideo, HelpCircle, Trash, Send, Settings,PaintBucket} from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroupLabel } from "@/components/ui/sidebar";
 import Link from "next/link";
 
@@ -16,8 +16,9 @@ const videos: MenuItem[] = [
 ];
 
 const premium: MenuItem[] = [
-  {title: "Create Avatar",url: "/createAvatar",icon:UserRound },
-  {title: "Create Voice",url: "/createVoice",icon:AudioLines },
+  {title: "Create avatar",url: "/createAvatar",icon:UserRound },
+  {title: "Create voice",url: "/createVoice",icon:AudioLines },
+  {title: "Edit Background",url: "/custom-bg",icon:PaintBucket },
 ];
 
 const others: MenuItem[] = [
