@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server"
+import { uploadVideo } from "@/lib/gridfs";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData()
+    
+    // Get email from formData
+    const email = formData.get('email') as string;
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    }
 
     // Get the Flask API URL from environment variable or use a default
-    const apiUrl = process.env.FLASK_API_URL || "https://7f3b-44-200-22-7.ngrok-free.app"
+    const apiUrl = process.env.FLASK_API_URL || "https://c359-3-235-145-101.ngrok-free.app/api/process-video"
 
     // Log the request for debugging
     console.log("Sending request to Flask API:", apiUrl)
@@ -25,15 +33,27 @@ export async function POST(request: Request) {
 
     // Get the processed video as a blob
     const videoBlob = await response.blob()
+    
+    // Create buffer and file from the blob
+    const generatedVideoBuffer = Buffer.from(await videoBlob.arrayBuffer());
+    const generatedVideoFile = new File([generatedVideoBuffer], 'final_video.mp4', { type: 'video/mp4' });
 
-    // Store the processed video in a temporary location or return it directly
-    // For this example, we'll return it directly
-    return new NextResponse(videoBlob, {
-      headers: {
-        "Content-Type": "video/mp4",
-        "Content-Disposition": "attachment; filename=processed-video.mp4",
-      },
-    })
+    // Convert to base64 for response
+    const base64Video = generatedVideoBuffer.toString('base64');
+
+    console.log("🚀Video generated successfully...");
+
+    // Save to GridFS
+    await uploadVideo(email, generatedVideoFile);
+
+    console.log("🚀Saved video successfully...");
+
+    // Return JSON response with base64 video
+    return NextResponse.json({ 
+      message: "Success", 
+      video: `data:video/mp4;base64,${base64Video}` 
+    }, { status: 200 });
+    
   } catch (error) {
     console.error("Error processing video:", error)
     return NextResponse.json({ error: "Failed to process video", details: String(error) }, { status: 500 })
