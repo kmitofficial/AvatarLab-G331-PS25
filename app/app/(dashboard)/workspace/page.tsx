@@ -11,14 +11,19 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { getEmail } from "@/lib/authenticate"
+import { motion } from 'framer-motion';
+import { useRouter } from "next/navigation"
 
 type Avatar = { id: string; name: string; gender: string; video: string; }
 type Voice = { id: string; name: string; gender: string; audio: string; text: string };
 
-export default function WorkspacePage(){
+export default function WorkspacePage() {
+
+  const [email, setEmail] = useState("");
+
   const [currentStep, setCurrentStep] = useState(1)
 
-  const [generateForm, setGenerateForm] = React.useState({ email:"" , text: "", videoId: "", audioId: "", audio_text: "" });
+  const [generateForm, setGenerateForm] = React.useState({ email: "", text: "", videoId: "", audioId: "", audio_text: "" });
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [preview, setPreview] = useState("")
@@ -26,7 +31,7 @@ export default function WorkspacePage(){
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const [preDefinedAvatar, setpreDefinedAvatars] = useState<Avatar[]>([]);
-  const [userAvatars,setUserAvatars] = useState<Avatar[]>();
+  const [userAvatars, setUserAvatars] = useState<Avatar[]>();
 
   const [preDefinedVoice, setpreDefinedVoices] = useState<Voice[]>([]);
   const [userVoice, setUserVoices] = useState<Voice[]>([]);
@@ -37,27 +42,36 @@ export default function WorkspacePage(){
   const [playingAudio, setPlayingAudio] = useState<Record<string, boolean>>({})
   const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({})
 
-
+  const router = useRouter();
 
   React.useEffect(() => {
-    const fetchAvatars = async () => {
+    const fetchData = async () => {
       const result = await getEmail();
-      const res = await fetch('/api/dev/avatars',{method:"POST",body:JSON.stringify({email:result?.email})})
-      const {predefined,user} = await res.json();
-      setpreDefinedAvatars(predefined);
-      setUserAvatars(user);
+      if (result) {
+        const email = result.email;
+        setEmail(email);
+
+        const avatarsRes = await fetch('/api/dev/avatars', {
+          method: "POST",
+          body: JSON.stringify({ email }),
+        });
+        const { predefined: predefinedAvatars, user: userAvatars } = await avatarsRes.json();
+        setpreDefinedAvatars(predefinedAvatars);
+        setUserAvatars(userAvatars);
+
+        const voicesRes = await fetch('/api/dev/voices', {
+          method: "POST",
+          body: JSON.stringify({ email }),
+        });
+        const { predefined: predefinedVoices, user: userVoices } = await voicesRes.json();
+        setpreDefinedVoices(predefinedVoices);
+        setUserVoices(userVoices);
+      } else {
+        router.push("/login");
+      }
     };
 
-    const fetchVoices = async () => {
-      const result = await getEmail();
-      const res = await fetch('/api/dev/voices',{method:"POST",body:JSON.stringify({email:result?.email})});
-      const {predefined,user} = await res.json();
-      setpreDefinedVoices(predefined)
-      setUserVoices(user);
-    }
-
-    fetchAvatars();
-    fetchVoices();
+    fetchData();
   }, []);
 
   const toggleVideo = (id: string) => {
@@ -92,7 +106,6 @@ export default function WorkspacePage(){
     }
   }
 
-
   const handleNextStep = () => {
     if (currentStep === 1 && generateForm.text.trim() !== "") {
       setCurrentStep(2)
@@ -110,9 +123,8 @@ export default function WorkspacePage(){
   }
 
   const handleGenerate = async () => {
-    setIsGenerating(true);
-    const result = await getEmail();
-    setGenerateForm((prev) =>({...prev,email:result!.email}));
+    setIsGenerating(true);;
+    setGenerateForm((prev) => ({ ...prev, email: email }));
     const response = await fetch('/api/user/generate', {
       method: 'POST',
       body: JSON.stringify(generateForm)
@@ -129,7 +141,9 @@ export default function WorkspacePage(){
     <>
       {/* Step 1: Enter Script - ChatGPT-like interface */}
       {currentStep === 1 && (
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
+        <motion.div
+          className="min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} >
           <div className="container mx-auto">
             <div className="mb-6 text-center">
               <h1 className="text-4xl fontfamily font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -146,15 +160,16 @@ export default function WorkspacePage(){
 
                 <div className="relative mt-8">
                   <Textarea
-                    ref={textareaRef}
-                    value={generateForm.text}
-                    onChange={(e) => (setGenerateForm(prev => ({ ...prev, text: e.target.value })))}
-                    onKeyDown={(e)=> {if(e.key === "Enter" && !e.shiftKey && currentStep === 1){
-                      e.preventDefault()
-                      if (generateForm.text.trim() !== "") {
-                        handleNextStep()
+                    ref={textareaRef} value={generateForm.text}
+                    onChange={(e) => setGenerateForm((prev) => ({ ...prev, text: e.target.value }))}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey && currentStep === 1) {
+                        e.preventDefault();
+                        if (generateForm.text.trim() !== "") {
+                          handleNextStep();
+                        }
                       }
-                    }}}
+                    }}
                     placeholder="Type or paste your script here..."
                     className="min-h-[120px] pr-12 resize-none border-blue-200 dark:border-blue-800 focus-visible:ring-blue-500 rounded-xl"
                   />
@@ -170,12 +185,20 @@ export default function WorkspacePage(){
 
                 <div className="mt-2 text-xs text-center text-muted-foreground">Press Enter to continue</div>
               </div>
-            </div></div></div>
+            </div>
+          </div>
+        </motion.div>
       )}
 
       {/* Step 2: Select Avatar */}
       {currentStep === 2 && (
-        <div className="container mx-auto">
+        <motion.div
+          className="container mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mb-6 text-center">
             <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Select an Avatar
@@ -192,49 +215,53 @@ export default function WorkspacePage(){
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                 {preDefinedAvatar.map((avatar) => (
-                  <Card
+                  <motion.div
                     key={avatar.id}
-                    onClick={() => setGenerateForm(prev => ({ ...prev, videoId: avatar.id }))}
-                    className={`p-0 rounded-sm overflow-hidden cursor-pointer transition-all hover:shadow-md
-                    ${generateForm.videoId === avatar.id
-                        ? "border-blue-500 ring-2 ring-blue-500"
-                        : "border-gray-200 dark:border-gray-800"
-                      }`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.4 }}
                   >
-                    <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
-                      <video ref={(el) => {
-                        if (el) videoRefs.current[avatar.id] = el;
-                      }} src={avatar.video} preload="metadata" />
+                    <Card
+                      onClick={() => setGenerateForm((prev) => ({ ...prev, videoId: avatar.id }))}
+                      className={`p-0 rounded-sm overflow-hidden cursor-pointer transition-all hover:shadow-md
+                    ${generateForm.videoId === avatar.id
+                          ? "border-blue-500 ring-2 ring-blue-500"
+                          : "border-gray-200 dark:border-gray-800"
+                        }`}
+                    >
+                      <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+                        <video ref={(el) => { if (el) videoRefs.current[avatar.id] = el; }} src={avatar.video} preload="metadata" />
 
-
-                      {/* Play/Pause button overlay */}
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute bottom-3 left-3 h-10 w-10 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 shadow-md"
-                        onClick={() => toggleVideo(avatar.id)}
-                      >
-                        {playingVideo[avatar.id] === true ? (
-                          <Pause className="h-5 w-5 text-blue-600 dark:text-white" />
-                        ) : (
-                          <Play className="h-5 w-5 text-blue-600 dark:text-white" />
-                        )}
-                      </Button>
-                    </div>
-                    <CardContent className="p-3">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium">{avatar.name}</p>
-                          <p className="text-xs text-muted-foreground">{avatar.gender}</p>
-                        </div>
-                        {generateForm.videoId == avatar.id && (
-                          <div className="h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        )}
+                        {/* Play/Pause button overlay */}
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="absolute bottom-3 left-3 h-10 w-10 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 shadow-md"
+                          onClick={() => toggleVideo(avatar.id)}
+                        >
+                          {playingVideo[avatar.id] === true ? (
+                            <Pause className="h-5 w-5 text-blue-600 dark:text-white" />
+                          ) : (
+                            <Play className="h-5 w-5 text-blue-600 dark:text-white" />
+                          )}
+                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
+                      <CardContent className="p-3">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium">{avatar.name}</p>
+                            <p className="text-xs text-muted-foreground">{avatar.gender}</p>
+                          </div>
+                          {generateForm.videoId === avatar.id && (
+                            <div className="h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
+                              <Check className="h-3 w-3 text-white" />
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
 
@@ -254,12 +281,19 @@ export default function WorkspacePage(){
                 </Button>
               </div>
             </div>
-          </div></div>
+          </div>
+        </motion.div>
       )}
 
       {/* Step 3: Select Voice */}
       {currentStep === 3 && (
-        <div className="container mx-auto">
+        <motion.div
+          className="container mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mb-6 text-center">
             <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Choose a Voice
@@ -274,39 +308,41 @@ export default function WorkspacePage(){
 
               <div className="space-y-3 mb-6">
                 {preDefinedVoice.map((voice) => (
-                  <Card
-                    key={voice.id}
-                    className={`p-0 rounded-none shadow-md overflow-hidden transition-all
+                  <motion.div
+                    key={voice.id} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.4 }} >
+                    <Card
+                      onClick={() => setGenerateForm((prev) => ({ ...prev, audioId: voice.id, audio_text: voice.text }))}
+                      className={`p-0 rounded-none shadow-md overflow-hidden transition-all cursor-pointer 
                     ${generateForm.audioId === voice.id
-                        ? "border-blue-500 ring-1 ring-blue-500"
-                        : "border-gray-200 dark:border-gray-800"
-                      }`}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroup value={generateForm.audioId} onValueChange={(value) => setGenerateForm(prev => ({ ...prev, audioId: voice.id, audio_text: voice.text }))} className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value={voice.id} id={voice.id} className="text-blue-600" />
-                            <div>
-                              <Label htmlFor={voice.id} className="font-medium cursor-pointer">
-                                {voice.name}
-                              </Label>
-                              <p className="mt-2 text-xs text-muted-foreground">
-                                {voice.gender} • English
-                              </p>
+                          ? "border-blue-500 ring-1 ring-blue-500"
+                          : "border-gray-200 dark:border-gray-800"
+                        }`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroup value={generateForm.audioId} className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value={voice.id} id={voice.id} className="text-blue-600" />
+                              <div>
+                                <Label htmlFor={voice.id} className="font-medium cursor-pointer">
+                                  {voice.name}
+                                </Label>
+                                <p className="mt-2 text-xs text-muted-foreground">
+                                  {voice.gender} • English
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </RadioGroup>
-                        <Button variant="outline" size="sm" className="h-8 border-blue-200 dark:border-blue-800"
-                          onClick={() => toggleAudio(voice.id)}>
-                          {playingAudio[voice.id] ? (<Pause className="h-4 w-4 mr-1" />) : (<Play className="h-4 w-4 mr-1" />)}
-                          Preview
-                          <audio ref={(el) => { if (el) audioRefs.current[voice.id] = el; }}
-                            src={voice.audio}></audio>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                          </RadioGroup>
+                          <Button variant="outline" size="sm" className="h-8 border-blue-200 dark:border-blue-800"
+                            onClick={() => toggleAudio(voice.id)}>
+                            {playingAudio[voice.id] ? (<Pause className="h-4 w-4 mr-1" />) : (<Play className="h-4 w-4 mr-1" />)}
+                            Preview
+                            <audio ref={(el) => { if (el) audioRefs.current[voice.id] = el; }} src={voice.audio}></audio>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
 
@@ -332,12 +368,19 @@ export default function WorkspacePage(){
                 </Button>
               </div>
             </div>
-          </div></div>
+          </div>
+        </motion.div>
       )}
 
       {/* Step 4: Preview */}
       {currentStep === 4 && (
-        <div className="container mx-auto">
+        <motion.div
+          className="container mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mb-6">
             <h1 className="text-2xl fontfamily font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Preview Your Video
@@ -379,7 +422,8 @@ export default function WorkspacePage(){
                 </div>
               </div>
             </div>
-          </div></div>
+          </div>
+        </motion.div>
       )}
     </>
   )

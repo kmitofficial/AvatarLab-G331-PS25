@@ -1,73 +1,79 @@
 "use client"
 
-import { useState } from "react"
-import { Search,Play, RotateCcw, Trash2 } from "lucide-react"
-
+import { useEffect, useState } from "react"
+import { Search, Play, RotateCcw, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { getEmail } from "@/lib/authenticate"
+import { toast } from 'react-toastify'
+import { motion } from 'framer-motion'
 
-// Sample deleted videos data
-const deletedVideos = [
-  {
-    id: 1,
-    title: "Old Marketing Video",
-    thumbnail: "/placeholder.svg?height=720&width=1280",
-    duration: "02:15",
-    deletedDate: "Mar 15, 2025",
-    expiryDate: "Apr 15, 2025",
-  },
-  {
-    id: 2,
-    title: "Draft Presentation",
-    thumbnail: "/placeholder.svg?height=720&width=1280",
-    duration: "01:30",
-    deletedDate: "Mar 20, 2025",
-    expiryDate: "Apr 20, 2025",
-  },
-  {
-    id: 3,
-    title: "Test Recording",
-    thumbnail: "/placeholder.svg?height=720&width=1280",
-    duration: "00:45",
-    deletedDate: "Mar 25, 2025",
-    expiryDate: "Apr 25, 2025",
-  },
-]
+type VideoType = { id: string; filename: string; video: string; duration: string; trashedAt: string; expiry: string }
 
 export default function TrashPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("newest")
-  const [selectedItems, setSelectedItems] = useState<number[]>([])
+  const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [videos, setVideos] = useState<VideoType[]>([]);
+  const [openVideo, setOpenVideo] = useState<VideoType | null>(null)
+  const [email, setEmail] = useState("");
 
-  const toggleSelectItem = (id: number) => {
+  const toggleSelectItem = (id: string) => {
     setSelectedItems((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
   }
 
   const toggleSelectAll = () => {
-    if (selectedItems.length === deletedVideos.length) {
+    if (selectedItems.length === videos.length) {
       setSelectedItems([])
     } else {
-      setSelectedItems(deletedVideos.map((video) => video.id))
+      setSelectedItems(videos.map((video) => video.id))
+    }
+  }
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      const result = await getEmail();
+      setEmail(result!.email);
+      try {
+        const response = await fetch('/api/user/trash', { method: "POST", body: JSON.stringify({ email: result?.email }) });
+        if (response.ok) {
+          const data = await response.json();
+          setVideos(data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    fetchVideos();
+  }, []);
+
+  const handleRestore = async (videoID: string) => {
+    try {
+      const response = await fetch('api/user/deleteVideo', { method: "POST", body: JSON.stringify({ email: email, videoID: videoID, role: "restore" }) });
+      const { message } = await response.json();
+      if (response.ok) {
+        setVideos(prev => prev.filter(video => video.id !== videoID));
+        toast.success(message);
+      } else toast.error(message);
+    } catch (error) {
+      console.log(error);
     }
   }
 
   return (
-    <div className="container mx-auto">
+    <motion.div
+      className="container mx-auto p-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="mb-6">
         <h1 className="text-3xl font-medium bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
           Trash
@@ -103,7 +109,7 @@ export default function TrashPage() {
           <div className="flex items-center gap-2">
             <Checkbox
               id="select-all"
-              checked={selectedItems.length === deletedVideos.length}
+              checked={selectedItems.length === videos.length}
               onCheckedChange={toggleSelectAll}
               className="border-red-300 dark:border-red-700 data-[state=checked]:bg-red-600 data-[state=checked]:text-white"
             />
@@ -127,7 +133,6 @@ export default function TrashPage() {
                   className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 border-0"
                 >
                   <Trash2 className="mr h-3 w-3" />
-
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -149,67 +154,94 @@ export default function TrashPage() {
         </div>
       )}
 
-      <div className="space-y-4">
-        {deletedVideos.map((video) => (
-          <Card key={video.id} className="p-0 rounded-sm overflow-hidden shadow-md">
-            
-            <CardContent className="p-0">
-              <div className="flex flex-col sm:flex-row">
-                <div className="relative flex items-center p-3 sm:w-16">
-                  <Checkbox
-                    checked={selectedItems.includes(video.id)}
-                    onCheckedChange={() => toggleSelectItem(video.id)}
-                    className="border-red-300 dark:border-red-700 data-[state=checked]:bg-red-600 data-[state=checked]:text-white"
-                  />
-                </div>
-                <div className="relative h-32 sm:h-24 sm:w-44">
-                  <img
-                    src={video.thumbnail || "/placeholder.svg"}
-                    alt={video.title}
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs text-white">
-                    {video.duration}
+      <motion.div
+        className="space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ staggerChildren: 0.3, duration: 0.5 }}
+      >
+        {videos.map((video) => (
+          <motion.div
+            key={video.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <Card className="p-0 rounded-sm overflow-hidden shadow-md">
+              <CardContent className="p-0">
+                <div className="flex flex-col sm:flex-row">
+                  <div className="relative flex items-center p-3">
+                    <Checkbox
+                      checked={selectedItems.includes(video.id)}
+                      onCheckedChange={() => toggleSelectItem(video.id)}
+                      className="border-red-300 dark:border-red-700 data-[state=checked]:bg-red-600 data-[state=checked]:text-white"
+                    />
+                  </div>
+                  <div className="relative h-40 w-36 overflow-hidden">
+                    <video
+                      src={video.video}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs text-white">
+                      {video.duration}
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col justify-center p-4">
+                    <h3 className="font-medium text-red-800 dark:text-red-300 mb-2">{video.filename}</h3>
+                    <div className="gap-1 text-xs text-muted-foreground sm:flex-row sm:gap-4">
+                      <p className="mb-2">Deleted on: {video.trashedAt}</p>
+                      <p>Will be permanently deleted on: {video.expiry}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end gap-2 p-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setOpenVideo(video)}
+                      className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
+                    >
+                      <Play className="mr-1 h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRestore(video.id)}
+                      className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
+                    >
+                      <RotateCcw className="mr-1 h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
+                    >
+                      <Trash2 className="mr-1 h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex flex-1 flex-col justify-center p-4">
-                  <h3 className="font-medium text-red-800 dark:text-red-300">{video.title}</h3>
-                  <div className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:gap-4">
-                    <span>Deleted on: {video.deletedDate}</span>
-                    <span>Will be permanently deleted on: {video.expiryDate}</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-end gap-2 p-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
-                  >
-                    <Play className="mr-1 h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
-                  >
-                    <RotateCcw className="mr-1 h-3 w-3" />
-
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
-                  >
-                    <Trash2 className="mr-1 h-3 w-3" />
-
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+
+      {openVideo && (
+        <Dialog open={!!openVideo} onOpenChange={() => setOpenVideo(null)}>
+          <DialogContent
+            className="max-w-3xl p-0 bg-transparent border-none shadow-none"
+          >
+            <video
+              src={openVideo.video}
+              controls
+              width={400}
+              height={400}
+              autoPlay
+              className="w-full h-full object-contain rounded-sm"
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+    </motion.div>
   )
 }
-

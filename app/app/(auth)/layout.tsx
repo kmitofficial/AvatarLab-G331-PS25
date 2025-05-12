@@ -1,10 +1,6 @@
 import { ToastContainer } from "react-toastify";
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: {children: React.ReactNode}) {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-200 via-white to-blue-200">
             <ToastContainer/>

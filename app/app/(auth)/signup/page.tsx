@@ -56,7 +56,7 @@ export default function SignIn() {
                             value={signUpForm.username}
                             onChange={handleChange}
                             placeholder="Enter Your User Name"
-                            className="block rounded-none w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            className="block rounded-none w-full pl-10 pr-10 py-2 border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         />
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <UserRound size={20} />
@@ -69,7 +69,7 @@ export default function SignIn() {
                             value={signUpForm.email}
                             onChange={handleChange}
                             placeholder="Enter Your Email"
-                            className="block rounded-none w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            className="block rounded-none w-full pl-10 pr-10 py-2 border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         />
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <Mail size={20} />
@@ -83,7 +83,7 @@ export default function SignIn() {
                             value={signUpForm.password}
                             onChange={handleChange}
                             placeholder="Enter Your Password"
-                            className="block rounded-none w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            className="block rounded-none w-full pl-10 pr-10 py-2 border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         />
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <Lock size={20} />

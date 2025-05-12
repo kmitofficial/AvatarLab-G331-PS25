@@ -7,12 +7,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { getEmail } from "@/lib/authenticate"
+import { useRouter } from "next/navigation"
 
 
 export function TopRightIcons() {
   const [notificationCount, setNotificationCount] = useState(1)
   const [details, setDetails] = useState({ email: "", username: "", image: "" })
   const [profilePhoto, setProfilePhoto] = useState("")
+  const router = useRouter();
 
   useEffect(() => {
     const getDetails = async () => {
@@ -25,6 +27,15 @@ export function TopRightIcons() {
     };
     getDetails();
   }, []);
+
+  const handleLogOut = async () =>{
+    try{
+      const response = await fetch("/api/auth/logout",{method:"POST"});
+      if(response.ok) router.push("/login");
+    }catch(err){
+      console.log(err);
+    }
+  }
 
   return (
     <div className="flex items-center gap-4 mr-5">
@@ -54,7 +65,7 @@ export function TopRightIcons() {
             </div>
           </div>
           <DropdownMenuSeparator />
-          <Button variant="ghost" size="sm" className="w-full justify-center text-blue-600">
+          <Button onClick={() => setNotificationCount(0)} variant="ghost" size="sm" className="w-full justify-center text-blue-600">
             Mark all as read
           </Button>
         </DropdownMenuContent>
@@ -105,7 +116,7 @@ export function TopRightIcons() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
           </Link>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-red-600 focus:text-red-600">Log out</DropdownMenuItem>
+          <DropdownMenuItem className="text-red-600 focus:text-red-600" onClick={handleLogOut}>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

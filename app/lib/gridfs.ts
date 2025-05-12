@@ -10,8 +10,10 @@ export async function uploadVideo(email: string, file: File) {
   
   const bucket = new GridFSBucket(db, { bucketName: "videos" });
 
+  const metadata = {email,trashed:false,trashedAt:null};
+
   const uploadStream = bucket.openUploadStream(file.name, {
-    metadata: { email },
+    metadata,
   });
 
   const readable = Readable.from(buffer);
@@ -28,7 +30,7 @@ export async function uploadVideo(email: string, file: File) {
           message: "Video uploaded successfully",
           fileId: uploadStream.id as ObjectId,
           filename: file.name,
-          metadata: { email },
+          metadata,
         });
       });
   });
