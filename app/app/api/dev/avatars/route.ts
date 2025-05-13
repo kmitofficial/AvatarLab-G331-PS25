@@ -9,32 +9,55 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Email is required' }, { status: 400 });
     }
 
-    const avatars = await prisma.avatar.findMany({
+    // Fetch predefined avatars
+    const predefinedAvatars = await prisma.avatar.findMany({
       select: { id: true, name: true, gender: true, video: true },
     });
 
-    const userAvatar = await prisma.userAvatar.findMany({
+    // Fetch all user-defined avatars
+    const userDefinedAvatars = await prisma.userAvatar.findMany({
+      select: { id: true, name: true, gender: true, email: true, video: true },
+    });
+
+    // Fetch user-specific avatars for the provided email
+    const userAvatars = await prisma.userAvatar.findMany({
       where: { email },
-      select: { id: true, name: true, gender: true, video: true },
+      select: { id: true, name: true, gender: true, email: true, video: true },
     });
 
-    const predefinedFormatted = avatars.map((avatar) => ({
+    // Format predefined avatars
+    const predefinedFormatted = predefinedAvatars.map((avatar) => ({
       id: avatar.id,
       name: avatar.name,
       gender: avatar.gender,
       video: `data:video/mp4;base64,${Buffer.from(avatar.video).toString('base64')}`,
     }));
 
-    const userAvatarFormatted = userAvatar.length > 0
-      ? userAvatar.map((avatar) => ({
+    // Format user-defined avatars
+    const userDefinedFormatted = userDefinedAvatars.map((avatar) => ({
+      id: avatar.id,
+      name: avatar.name,
+      gender: avatar.gender,
+      email: avatar.email,
+      video: `data:video/mp4;base64,${Buffer.from(avatar.video).toString('base64')}`,
+    }));
+
+    // Format user-specific avatars
+    const userFormatted = userAvatars.length > 0
+      ? userAvatars.map((avatar) => ({
           id: avatar.id,
           name: avatar.name,
           gender: avatar.gender,
+          email: avatar.email,
           video: `data:video/mp4;base64,${Buffer.from(avatar.video).toString('base64')}`,
         }))
       : null;
 
-    const data = { predefined: predefinedFormatted, user: userAvatarFormatted };
+    const data = {
+      predefined: predefinedFormatted,
+      userdefined: userDefinedFormatted,
+      user: userFormatted,
+    };
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
