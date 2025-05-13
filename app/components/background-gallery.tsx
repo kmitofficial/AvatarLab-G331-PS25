@@ -97,7 +97,6 @@ export default function BackgroundGallery({
             onClick={onClose}
             className="text-white hover:bg-blue-700/50 rounded-full"
           >
-            <X size={20} strokeWidth={2.5} />
           </Button>
         </div>
         <p className="text-blue-100 mt-1">Select a background to enhance your video</p>
@@ -187,7 +186,6 @@ export default function BackgroundGallery({
         ) : (
           <div className="text-center p-8 text-slate-500">
             <p className="mb-2">No background categories available</p>
-            <p className="text-sm">Try adding some backgrounds to your database</p>
           </div>
         )}
       </div>

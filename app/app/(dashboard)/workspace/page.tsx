@@ -231,7 +231,9 @@ export default function WorkspacePage() {
     <>
       {/* Step 1: Enter Script - ChatGPT-like interface */}
       {currentStep === 1 && (
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
+        <motion.div
+          className="min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} >
           <div className="container mx-auto">
             <div className="mb-6 text-center">
               <h1 className="text-4xl fontfamily font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -346,7 +348,13 @@ export default function WorkspacePage() {
 
       {/* Step 2: Select Avatar */}
       {currentStep === 2 && (
-        <div className="container mx-auto">
+        <motion.div
+          className="container mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mb-6 text-center">
             <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Select an Avatar
@@ -363,49 +371,53 @@ export default function WorkspacePage() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                 {preDefinedAvatar.map((avatar) => (
-                  <Card
+                  <motion.div
                     key={avatar.id}
-                    onClick={() => setGenerateForm(prev => ({ ...prev, videoId: avatar.id }))}
-                    className={`p-0 rounded-sm overflow-hidden cursor-pointer transition-all hover:shadow-md
-                    ${generateForm.videoId === avatar.id
-                        ? "border-blue-500 ring-2 ring-blue-500"
-                        : "border-gray-200 dark:border-gray-800"
-                      }`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.4 }}
                   >
-                    <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
-                      <video ref={(el) => {
-                        if (el) videoRefs.current[avatar.id] = el;
-                      }} src={avatar.video} preload="metadata" />
+                    <Card
+                      onClick={() => setGenerateForm((prev) => ({ ...prev, videoId: avatar.id }))}
+                      className={`p-0 rounded-sm overflow-hidden cursor-pointer transition-all hover:shadow-md
+                    ${generateForm.videoId === avatar.id
+                          ? "border-blue-500 ring-2 ring-blue-500"
+                          : "border-gray-200 dark:border-gray-800"
+                        }`}
+                    >
+                      <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+                        <video ref={(el) => { if (el) videoRefs.current[avatar.id] = el; }} src={avatar.video} preload="metadata" />
 
-
-                      {/* Play/Pause button overlay */}
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute bottom-3 left-3 h-10 w-10 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 shadow-md"
-                        onClick={() => toggleVideo(avatar.id)}
-                      >
-                        {playingVideo[avatar.id] === true ? (
-                          <Pause className="h-5 w-5 text-blue-600 dark:text-white" />
-                        ) : (
-                          <Play className="h-5 w-5 text-blue-600 dark:text-white" />
-                        )}
-                      </Button>
-                    </div>
-                    <CardContent className="p-3">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium">{avatar.name}</p>
-                          <p className="text-xs text-muted-foreground">{avatar.gender}</p>
-                        </div>
-                        {generateForm.videoId == avatar.id && (
-                          <div className="h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        )}
+                        {/* Play/Pause button overlay */}
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="absolute bottom-3 left-3 h-10 w-10 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 shadow-md"
+                          onClick={() => toggleVideo(avatar.id)}
+                        >
+                          {playingVideo[avatar.id] === true ? (
+                            <Pause className="h-5 w-5 text-blue-600 dark:text-white" />
+                          ) : (
+                            <Play className="h-5 w-5 text-blue-600 dark:text-white" />
+                          )}
+                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
+                      <CardContent className="p-3">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium">{avatar.name}</p>
+                            <p className="text-xs text-muted-foreground">{avatar.gender}</p>
+                          </div>
+                          {generateForm.videoId === avatar.id && (
+                            <div className="h-5 w-5 bg-blue-500 rounded-full flex items-center justify-center">
+                              <Check className="h-3 w-3 text-white" />
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
 
@@ -425,12 +437,19 @@ export default function WorkspacePage() {
                 </Button>
               </div>
             </div>
-          </div></div>
+          </div>
+        </motion.div>
       )}
 
       {/* Step 3: Select Voice */}
       {currentStep === 3 && (
-        <div className="container mx-auto">
+        <motion.div
+          className="container mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mb-6 text-center">
             <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
               Choose a Voice
@@ -445,39 +464,41 @@ export default function WorkspacePage() {
 
               <div className="space-y-3 mb-6">
                 {preDefinedVoice.map((voice) => (
-                  <Card
-                    key={voice.id}
-                    className={`p-0 rounded-none shadow-md overflow-hidden transition-all
+                  <motion.div
+                    key={voice.id} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.4 }} >
+                    <Card
+                      onClick={() => setGenerateForm((prev) => ({ ...prev, audioId: voice.id, audio_text: voice.text }))}
+                      className={`p-0 rounded-none shadow-md overflow-hidden transition-all cursor-pointer 
                     ${generateForm.audioId === voice.id
-                        ? "border-blue-500 ring-1 ring-blue-500"
-                        : "border-gray-200 dark:border-gray-800"
-                      }`}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroup value={generateForm.audioId} onValueChange={(value) => setGenerateForm(prev => ({ ...prev, audioId: voice.id, audio_text: voice.text }))} className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value={voice.id} id={voice.id} className="text-blue-600" />
-                            <div>
-                              <Label htmlFor={voice.id} className="font-medium cursor-pointer">
-                                {voice.name}
-                              </Label>
-                              <p className="mt-2 text-xs text-muted-foreground">
-                                {voice.gender} • English
-                              </p>
+                          ? "border-blue-500 ring-1 ring-blue-500"
+                          : "border-gray-200 dark:border-gray-800"
+                        }`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroup value={generateForm.audioId} className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value={voice.id} id={voice.id} className="text-blue-600" />
+                              <div>
+                                <Label htmlFor={voice.id} className="font-medium cursor-pointer">
+                                  {voice.name}
+                                </Label>
+                                <p className="mt-2 text-xs text-muted-foreground">
+                                  {voice.gender} • English
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </RadioGroup>
-                        <Button variant="outline" size="sm" className="h-8 border-blue-200 dark:border-blue-800"
-                          onClick={() => toggleAudio(voice.id)}>
-                          {playingAudio[voice.id] ? (<Pause className="h-4 w-4 mr-1" />) : (<Play className="h-4 w-4 mr-1" />)}
-                          Preview
-                          <audio ref={(el) => { if (el) audioRefs.current[voice.id] = el; }}
-                            src={voice.audio}></audio>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                          </RadioGroup>
+                          <Button variant="outline" size="sm" className="h-8 border-blue-200 dark:border-blue-800"
+                            onClick={() => toggleAudio(voice.id)}>
+                            {playingAudio[voice.id] ? (<Pause className="h-4 w-4 mr-1" />) : (<Play className="h-4 w-4 mr-1" />)}
+                            Preview
+                            <audio ref={(el) => { if (el) audioRefs.current[voice.id] = el; }} src={voice.audio}></audio>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
 
@@ -503,12 +524,19 @@ export default function WorkspacePage() {
                 </Button>
               </div>
             </div>
-          </div></div>
+          </div>
+        </motion.div>
       )}
 
       {/* Step 4: Preview */}
       {currentStep === 4 && (
-        <div className="container mx-auto">
+        <motion.div
+          className="container mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mb-6">
             <h1 className="text-2xl fontfamily font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Preview Your Video
@@ -550,7 +578,8 @@ export default function WorkspacePage() {
                 </div>
               </div>
             </div>
-          </div></div>
+          </div>
+        </motion.div>
       )}
     </>
   )

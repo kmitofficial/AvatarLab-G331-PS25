@@ -1,3 +1,5 @@
+"use client"
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -6,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BookOpen, FileText, MessageCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 
 const faqItems = [
@@ -25,69 +28,150 @@ const guideItems = [
   { title: "Account Management", description: "Manage your subscription, billing, and account settings" }
 ];
 
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 20 },
+  transition: { duration: 0.4, ease: "easeOut" }
+}
 export default function HelpPage() {
   return (
-    <div className="container mx-auto p-2">
-      <div className="mb-6 text-center">
-        <h1 className="text-3xl font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Help & Support</h1>
-        <p className="text-muted-foreground">Find answers to your questions and get support</p>
-      </div>
+    <motion.div
+      {...fadeUp}
+      className="container mx-auto p-2"
+    >
+      <motion.div {...fadeUp} className="mb-6 text-center">
+        <h1 className="text-3xl font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          Help & Support
+        </h1>
+        <p className="text-muted-foreground">
+          Find answers to your questions and get support
+        </p>
+      </motion.div>
+
       <Tabs defaultValue="faq" className="space-y-6">
-        <TabsList className="rounded-none bg-blue-100 dark:bg-blue-900/30">
-          <TabsTrigger value="faq" className="rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"><BookOpen className="mr-2 h-4 w-4" /> FAQ</TabsTrigger>
-          <TabsTrigger value="guides" className="rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"><FileText className="mr-2 h-4 w-4" /> Guides</TabsTrigger>
-          <TabsTrigger value="contact" className="rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"><MessageCircle className="mr-2 h-4 w-4" /> Contact Support</TabsTrigger>
-        </TabsList>
+        <motion.div {...fadeUp}>
+          <TabsList className="rounded-none bg-blue-100 dark:bg-blue-900/30">
+            <TabsTrigger
+              value="faq"
+              className="rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
+            >
+              <BookOpen className="mr-2 h-4 w-4" /> FAQ
+            </TabsTrigger>
+            <TabsTrigger
+              value="guides"
+              className="rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
+            >
+              <FileText className="mr-2 h-4 w-4" /> Guides
+            </TabsTrigger>
+            <TabsTrigger
+              value="contact"
+              className="rounded-none data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
+            >
+              <MessageCircle className="mr-2 h-4 w-4" /> Contact Support
+            </TabsTrigger>
+          </TabsList>
+        </motion.div>
 
         <TabsContent value="faq" className="space-y-4">
-          <Card className="rounded-none">
-            <CardHeader><CardTitle>Frequently Asked Questions</CardTitle><CardDescription>Find answers to common questions about Avatar Lab</CardDescription></CardHeader>
-            <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                {faqItems.map((item, i) => (
-                  <AccordionItem key={i} value={`item-${i}`}>
-                    <AccordionTrigger>{item.question}</AccordionTrigger>
-                    <AccordionContent>{item.answer}</AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </CardContent>
-          </Card>
+          <motion.div {...fadeUp}>
+            <Card className="rounded-none">
+              <CardHeader>
+                <CardTitle>Frequently Asked Questions</CardTitle>
+                <CardDescription>
+                  Find answers to common questions about Avatar Lab
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  {faqItems.map((item, i) => (
+                    <motion.div key={i} {...fadeUp}>
+                      <AccordionItem value={`item-${i}`}>
+                        <AccordionTrigger>{item.question}</AccordionTrigger>
+                        <AccordionContent>{item.answer}</AccordionContent>
+                      </AccordionItem>
+                    </motion.div>
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="guides" className="space-y-4">
-          <Card className="rounded-none">
-            <CardHeader><CardTitle>User Guides</CardTitle><CardDescription>Step-by-step guides to help you get the most out of Avatar Lab</CardDescription></CardHeader>
-            <CardContent>
-              <div className="p-0 grid gap-4 sm:grid-cols-4">
-                {guideItems.map((g, i) => (
-                  <Card key={i} className="p-0 rounded-sm cursor-pointer hover:shadow-md transition-shadow">
-                    <CardHeader className="p-4"><CardTitle className="text-lg">{g.title}</CardTitle></CardHeader>
-                    <CardContent className="p-4 pt-0 text-sm text-muted-foreground">{g.description}</CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div {...fadeUp}>
+            <Card className="rounded-none">
+              <CardHeader>
+                <CardTitle>User Guides</CardTitle>
+                <CardDescription>
+                  Step-by-step guides to help you get the most out of Avatar Lab
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="p-0 grid gap-4 sm:grid-cols-4">
+                  {guideItems.map((g, i) => (
+                    <motion.div key={i} {...fadeUp}>
+                      <Card className="p-0 rounded-sm cursor-pointer hover:shadow-md transition-shadow">
+                        <CardHeader className="p-4">
+                          <CardTitle className="text-lg">{g.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-0 text-sm text-muted-foreground">
+                          {g.description}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="contact" className="space-y-4">
-          <Card className="rounded-none max-w-2xl mx-auto">
-            <CardHeader><CardTitle>Contact Support</CardTitle><CardDescription>Get help from our support team</CardDescription></CardHeader>
-            <CardContent>
-              <form className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2"><Label htmlFor="name">Name</Label><Input id="name" placeholder="Your name" /></div>
-                  <div className="space-y-2"><Label htmlFor="email">Email</Label><Input id="email" type="email" placeholder="Your email address" /></div>
-                </div>
-                <div className="space-y-2"><Label htmlFor="subject">Subject</Label><Input id="subject" placeholder="Brief description of your issue" /></div>
-                <div className="space-y-2"><Label htmlFor="message">Message</Label><Textarea id="message" placeholder="Please describe your issue in detail" className="rounded-sm min-h-[150px]" /></div>
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">Submit Request</Button>
-              </form>
-            </CardContent>
-          </Card>
+          <motion.div {...fadeUp}>
+            <Card className="rounded-none max-w-2xl mx-auto">
+              <CardHeader>
+                <CardTitle>Contact Support</CardTitle>
+                <CardDescription>Get help from our support team</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form className="space-y-4">
+                  <motion.div {...fadeUp} className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name</Label>
+                      <Input id="name" placeholder="Your name" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" type="email" placeholder="Your email address" />
+                    </div>
+                  </motion.div>
+
+                  <motion.div {...fadeUp} className="space-y-2">
+                    <Label htmlFor="subject">Subject</Label>
+                    <Input id="subject" placeholder="Brief description of your issue" />
+                  </motion.div>
+
+                  <motion.div {...fadeUp} className="space-y-2">
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Please describe your issue in detail"
+                      className="rounded-sm min-h-[150px]"
+                    />
+                  </motion.div>
+
+                  <motion.div {...fadeUp}>
+                    <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                      Submit Request
+                    </Button>
+                  </motion.div>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }

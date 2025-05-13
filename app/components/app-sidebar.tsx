@@ -1,4 +1,4 @@
-import { UserRound,AudioLines,Layers, FileVideo, HelpCircle, Trash, Send, Settings,PaintBucket} from "lucide-react";
+import { UserRound,AudioLines,Layers, FileVideo, HelpCircle, Trash, Send, Settings, Search, PenSquareIcon, PencilIcon} from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroupLabel } from "@/components/ui/sidebar";
 import Link from "next/link";
 
@@ -18,7 +18,7 @@ const videos: MenuItem[] = [
 const premium: MenuItem[] = [
   {title: "Create avatar",url: "/createAvatar",icon:UserRound },
   {title: "Create voice",url: "/createVoice",icon:AudioLines },
-  {title: "Edit Background",url: "/custom-bg",icon:PaintBucket },
+  {title: "Edit Background",url: "/custom-bg",icon:PencilIcon },
 ];
 
 const others: MenuItem[] = [
@@ -42,9 +42,13 @@ export function AppSidebar() {
     ));
 
   return (
-    <Sidebar>
-      <SidebarHeader className="flex flex-row p-4">
-        <span className="text-2xl font-semibold">{process.env.NEXT_PUBLIC_APP_NAME}</span>
+    <Sidebar className="!bg-black">
+      <SidebarHeader className="flex flex-row items-center justify-between px-4 py-2">
+        <img src="logo.png" alt="Logo" height={50} width={50} className="object-contain" />
+        <div className="flex flex-row gap-4">
+          <Search size={20}/>
+          <PenSquareIcon size={20} />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

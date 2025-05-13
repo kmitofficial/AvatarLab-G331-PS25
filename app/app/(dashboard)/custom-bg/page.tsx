@@ -3,46 +3,49 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Loader2, ImageIcon, Play, Pause, ChevronLeft, Upload, Lock, Crown, ChevronRight } from "lucide-react"
+import { Loader2, ImageIcon,Upload, Lock, Crown, CirclePlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import BackgroundGallery from "@/components/background-gallery"
+import { getEmail } from "@/lib/authenticate"
+import { motion } from "framer-motion"
+
+const pageVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.5, ease: "easeOut" } },
+  exit: { opacity: 0, transition: { duration: 0.3, ease: "easeIn" } },
+}
 
 export default function VideoEditorPage() {
   const router = useRouter()
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  // User email - in a real app, this would come from authentication
-  const userEmail = "hr14012006@gmail.com"
+  const [userEmail, setEmail] = useState("");
 
-  // State for video selection and playback
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [availableVideos, setAvailableVideos] = useState<any[]>([])
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
   const [videoUrl, setVideoUrl] = useState("")
-  const [isPlaying, setIsPlaying] = useState(false)
   const [videoSelectionOpen, setVideoSelectionOpen] = useState(true)
 
-  // State for background selection
-  const [backgroundType, setBackgroundType] = useState("original")
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [backgroundType, setBackgroundType] = useState("gallery")
   const [selectedBackground, setSelectedBackground] = useState<string | null>(null)
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<number | null>(null)
   const [galleryOpen, setGalleryOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState("nature")
 
-  // State for video processing
   const [isProcessing, setIsProcessing] = useState(false)
   const [processedVideoUrl, setProcessedVideoUrl] = useState<string | null>(null)
 
-  // Fetch user's videos from MongoDB
   useEffect(() => {
     const fetchUserVideos = async () => {
       try {
+        const result = await getEmail();
+        setEmail(result!.email);
         const response = await fetch("/api/user/videos", {
           method: "POST",
           headers: {
@@ -68,7 +71,6 @@ export default function VideoEditorPage() {
     fetchUserVideos()
   }, [userEmail])
 
-  // Handle video selection
   const handleSelectVideo = (videoId: string) => {
     const selectedVideo = availableVideos.find((video) => video.id === videoId)
     if (selectedVideo) {
@@ -78,7 +80,6 @@ export default function VideoEditorPage() {
     }
   }
 
-  // Handle background selection from gallery
   const handleSelectBackground = (src: string, id: number) => {
     setSelectedBackground(src)
     setSelectedBackgroundId(id)
@@ -86,19 +87,15 @@ export default function VideoEditorPage() {
     setGalleryOpen(false)
   }
 
-  // Process video with selected background
   const handleApplyBackground = async () => {
     if (!videoUrl) {
       console.error("No video available to process")
       return
     }
-
     if (backgroundType === "original") {
-      // No processing needed for original background
       setProcessedVideoUrl(null)
       return
     }
-
     if (backgroundType === "gallery" && !selectedBackground) {
       console.error("Please select a background from the gallery")
       return
@@ -106,38 +103,23 @@ export default function VideoEditorPage() {
 
     try {
       setIsProcessing(true)
-
-      // Create a FormData object to send the files
       const formData = new FormData()
-
-      // Add email to formData
       formData.append("email", userEmail)
-
-      // Find the selected video object
       const selectedVideo = availableVideos.find((video) => video.id === selectedVideoId)
       if (!selectedVideo) {
         throw new Error("Selected video not found")
       }
-
-      // Add the video file
-      // For base64 videos, we need to convert them to a blob
       const videoBlob = await fetch(selectedVideo.video).then((r) => r.blob())
       formData.append("video", videoBlob, "input-video.mp4")
 
-      // Add the background image if using gallery
       if (backgroundType === "gallery" && selectedBackground) {
-        // For base64 images or URLs, convert to blob
         const bgResponse = await fetch(selectedBackground)
         const bgBlob = await bgResponse.blob()
         formData.append("bg", bgBlob, "background.png")
       }
-
-      // Add metadata about the selected background
       if (selectedBackgroundId) {
         formData.append("backgroundId", selectedBackgroundId.toString())
       }
-
-      // Send the request to our API endpoint
       const response = await fetch("/api/process-video", {
         method: "POST",
         body: formData,
@@ -147,8 +129,6 @@ export default function VideoEditorPage() {
         const errorData = await response.json()
         throw new Error(errorData.error || "Failed to process video")
       }
-
-      // Get the processed video as base64 from JSON response
       const responseData = await response.json()
       setProcessedVideoUrl(responseData.video)
 
@@ -161,7 +141,6 @@ export default function VideoEditorPage() {
     }
   }
 
-  // Handle video download
   const handleDownload = () => {
     const urlToDownload = processedVideoUrl || videoUrl
 
@@ -175,29 +154,13 @@ export default function VideoEditorPage() {
     }
   }
 
-  // Toggle video playback
-  const togglePlayback = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause()
-      } else {
-        videoRef.current.play()
-      }
-      setIsPlaying(!isPlaying)
-    }
-  }
-
-  // Determine which video URL to display
-  const displayVideoUrl = processedVideoUrl || videoUrl
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-6">
+    <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit">
       {/* Video Selection Dialog */}
       <Dialog open={videoSelectionOpen} onOpenChange={setVideoSelectionOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="rounded-sm sm:max-w-[600px]">
           <DialogTitle>Select a Video</DialogTitle>
           <DialogDescription>Choose a video from your library to customize and preview.</DialogDescription>
-
           {loading ? (
             <div className="flex items-center justify-center p-8">
               <Loader2 className="h-8 w-8 animate-spin text-blue-500 mr-2" />
@@ -220,9 +183,8 @@ export default function VideoEditorPage() {
                   availableVideos.map((video) => (
                     <div
                       key={video.id}
-                      className={`flex items-center p-3 cursor-pointer hover:bg-slate-50 transition-colors ${
-                        selectedVideoId === video.id ? "bg-blue-50" : ""
-                      }`}
+                      className={`flex items-center p-3 cursor-pointer hover:bg-slate-50 transition-colors ${selectedVideoId === video.id ? "bg-blue-50" : ""
+                        }`}
                       onClick={() => handleSelectVideo(video.id)}
                     >
                       <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mr-3">
@@ -240,7 +202,6 @@ export default function VideoEditorPage() {
                           <span>{video.duration}</span>
                         </div>
                       </div>
-                      <Play className="w-5 h-5 text-slate-400" />
                     </div>
                   ))
                 )}
@@ -268,87 +229,92 @@ export default function VideoEditorPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="mx-auto max-w-7xl bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="p-6 md:p-8">
+      <div className="container mx-auto p-2">
+        <div className="p-2">
           <h1 className="text-2xl font-bold text-slate-800 mb-6">
-            {loading ? "Loading Your Videos" : "Customize & Preview Your Video"}
+            Customize & Preview Your Video
           </h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Video Preview Section */}
             <div className="lg:col-span-2">
-              <div className="relative bg-slate-900 rounded-lg overflow-hidden aspect-video shadow-md">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {backgroundType === "original" && !processedVideoUrl && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-slate-800 to-slate-700"></div>
-                  )}
-                  {backgroundType === "gallery" && selectedBackground && !processedVideoUrl && (
-                    <Image
-                      src={selectedBackground || "/placeholder.svg"}
-                      alt="Gallery background"
-                      fill
-                      className="object-cover"
-                    />
-                  )}
-
-                  {loading ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-blue-900/10 z-10">
-                      <div className="text-center">
-                        <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
-                        <p className="text-blue-600 font-medium">Loading your videos...</p>
-                      </div>
-                    </div>
-                  ) : isProcessing ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-blue-900/10 z-10">
-                      <div className="text-center">
-                        <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
-                        <p className="text-blue-600 font-medium">Applying background...</p>
-                        <p className="text-blue-400 text-sm mt-2">This may take a moment</p>
-                      </div>
-                    </div>
-                  ) : error ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-red-900/10 z-10">
-                      <div className="text-center p-8">
-                        <p className="text-red-600 font-medium text-xl mb-4">Error</p>
-                        <p className="text-red-500">{error}</p>
-                        <Button className="mt-4 bg-red-600 hover:bg-red-700" onClick={() => window.location.reload()}>
-                          Try Again
-                        </Button>
-                      </div>
-                    </div>
-                  ) : displayVideoUrl ? (
-                    <video
-                      ref={videoRef}
-                      className="relative z-10 w-full h-full object-contain"
-                      controls
-                      autoPlay
-                      src={displayVideoUrl}
-                      onPlay={() => setIsPlaying(true)}
-                      onPause={() => setIsPlaying(false)}
-                    >
-                      <source src={displayVideoUrl} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : (
-                    <div className="text-center text-white">
-                      <p>Select a video to begin</p>
-                    </div>
-                  )}
-                </div>
-
-                {displayVideoUrl && !loading && !error && !isProcessing && (
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 rounded-full px-4 py-2 flex items-center space-x-2">
-                    <button onClick={togglePlayback} className="text-white hover:text-blue-400 transition-colors">
-                      {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                    </button>
-                    <div className="w-32 h-1 bg-white/30 rounded-full">
-                      <div className="w-1/3 h-1 bg-blue-500 rounded-full"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Video Preview */}
+                <div className="space-y-2">
+                  <p className="font-medium">Background Preview</p>
+                  <div onClick={()=>setVideoSelectionOpen(true)} className="cursor-pointer relative bg-gray-900 rounded-sm overflow-hidden aspect-video">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {loading ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-blue-900/10 z-10">
+                          <div className="text-center">
+                            <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
+                            <p className="text-blue-600 font-medium">Loading your videos...</p>
+                          </div>
+                        </div>
+                      ) : isProcessing ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-blue-900/10 z-10">
+                          <div className="text-center">
+                            <Loader2 className="h-16 w-16 animate-spin text-blue-500 mx-auto mb-4" />
+                            <p className="text-blue-600 font-medium">Applying background...</p>
+                            <p className="text-blue-400 text-sm mt-2">This may take a moment</p>
+                          </div>
+                        </div>
+                      ) : error ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-red-900/10 z-10">
+                          <div className="text-center p-8">
+                            <p className="text-red-600 font-medium text-xl mb-4">Error</p>
+                            <p className="text-red-500">{error}</p>
+                            <Button className="mt-4 bg-red-600 hover:bg-red-700" onClick={() => window.location.reload()}>
+                              Try Again
+                            </Button>
+                          </div>
+                        </div>
+                      ) : videoUrl ? (
+                        <video
+                          ref={videoRef}
+                          className="relative z-10 w-full h-full object-contain"
+                          controls
+                          src={videoUrl}
+                        >
+                          <source src={videoUrl} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center p-4">
+                          <CirclePlus size={40} color="white"/>
+                          <p className="text-white font-medium mt-2 mb-4">No video selected yet</p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
+
+                {/* Background Preview */}
+                <div className="space-y-2">
+                  <p className="font-medium">Background Preview</p>
+                  <div onClick={()=> setGalleryOpen(true)} className="cursor-pointer relative transition-all duration-300 ease-in-out bg-slate-100 rounded-sm hover:bg-gray-900 hover:text-white overflow-hidden aspect-video">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {backgroundType === "original" && !processedVideoUrl ? (
+                        <div className="absolute inset-0"></div>
+                      ) : backgroundType === "gallery" && selectedBackground && !processedVideoUrl ? (
+                        <Image
+                          src={selectedBackground || "/placeholder.svg"}
+                          alt="Gallery background"
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center p-4">
+                          <CirclePlus size={40}/>
+                          <p className="mt-2 font-medium mb-4">No background selected yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {displayVideoUrl && !loading && !error && (
+              {videoUrl && !loading && !error && (
                 <div className="mt-4">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold text-slate-800">Video Details</h2>
@@ -363,7 +329,7 @@ export default function VideoEditorPage() {
                         {isProcessing ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Processing...
+                            Processing
                           </>
                         ) : (
                           "Apply Background"
@@ -405,7 +371,7 @@ export default function VideoEditorPage() {
             </div>
 
             {/* Background Selection Section */}
-            <div className="bg-slate-50 rounded-lg p-6 shadow-sm">
+            <div className="bg-slate-100 rounded-lg p-6 shadow-sm">
               <div className="flex items-center mb-4">
                 <span className="text-blue-600 mr-2">✨</span>
                 <h2 className="text-xl font-semibold text-slate-800">Choose a Background</h2>
@@ -506,15 +472,10 @@ export default function VideoEditorPage() {
                 </div>
               </RadioGroup>
 
-              <div className="mt-8 pt-4 border-t border-slate-200">
-                <div className="flex justify-between">
+              <div className="mt-8 pt-4 border-t border-slate-400">
+                <div className="flex justify-center">
                   <Button variant="outline" onClick={() => setVideoSelectionOpen(true)}>
-                    <ChevronLeft className="mr-2 h-4 w-4" />
                     Change Video
-                  </Button>
-                  <Button onClick={handleApplyBackground} disabled={!displayVideoUrl || isProcessing}>
-                    Apply Background
-                    <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -535,6 +496,6 @@ export default function VideoEditorPage() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

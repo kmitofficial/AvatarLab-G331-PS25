@@ -8,7 +8,7 @@ export async function POST(req:NextRequest) {
         const { db } = await connectMDB();
         const { email } = await req.json();
         const bucket = new GridFSBucket(db, { bucketName: "videos" });
-        const files = await db.collection("videos.files").find({ "metadata.email": email }).toArray();
+        const files = await db.collection("videos.files").find({ "metadata.email": email,"metadata.trashed":false }).toArray();
         const videoData = await Promise.all(
             files.map(async (file) => {
               const chunks = [];
