@@ -234,11 +234,6 @@ const handleSubmit = async () => {
       formData.append("video", recordedBlob, "avatar-recording.mp4");
       formData.append("email",useremail);
 
-      // Log FormData for debugging
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-
       const response = await fetch("/api/dev/uploadUserAvatar", {
         method: "POST",
         body: formData,
@@ -310,7 +305,7 @@ const handleSubmit = async () => {
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white">My Avatars</h2>
               <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-md text-sm">
-                {9}
+                {userDefinedAvatar.length}
               </span>
             </div>
           </div>
@@ -371,7 +366,7 @@ const handleSubmit = async () => {
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Public Avatars</h2>
               <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-md text-sm">
-                {6}
+                {preDefinedAvatar.length}
               </span>
             </div>
           </div>
@@ -419,7 +414,12 @@ const handleSubmit = async () => {
 
           {/* Public Avatars Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {preDefinedAvatar.map((avatar)=> (
+            {preDefinedAvatar.filter(
+                (voice) =>
+                  voice.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  voice.gender.toLowerCase().includes(searchQuery.toLowerCase()),
+              )
+            .map((avatar)=> (
                 <Card
                   key={avatar.id}
                   className="overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-lg"
