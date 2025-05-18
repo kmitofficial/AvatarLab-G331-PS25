@@ -9,23 +9,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Email is required' }, { status: 400 });
     }
 
-    // Fetch predefined avatars
     const predefinedAvatars = await prisma.avatar.findMany({
       select: { id: true, name: true, gender: true, video: true },
     });
 
-    // Fetch all user-defined avatars
     const userDefinedAvatars = await prisma.userAvatar.findMany({
       select: { id: true, name: true, gender: true, email: true, video: true },
     });
 
-    // Fetch user-specific avatars for the provided email
     const userAvatars = await prisma.userAvatar.findMany({
       where: { email },
       select: { id: true, name: true, gender: true, email: true, video: true },
     });
 
-    // Format predefined avatars
     const predefinedFormatted = predefinedAvatars.map((avatar) => ({
       id: avatar.id,
       name: avatar.name,
@@ -33,7 +29,6 @@ export async function POST(req: NextRequest) {
       video: `data:video/mp4;base64,${Buffer.from(avatar.video).toString('base64')}`,
     }));
 
-    // Format user-defined avatars
     const userDefinedFormatted = userDefinedAvatars.map((avatar) => ({
       id: avatar.id,
       name: avatar.name,
@@ -42,21 +37,9 @@ export async function POST(req: NextRequest) {
       video: `data:video/mp4;base64,${Buffer.from(avatar.video).toString('base64')}`,
     }));
 
-    // Format user-specific avatars
-    const userFormatted = userAvatars.length > 0
-      ? userAvatars.map((avatar) => ({
-          id: avatar.id,
-          name: avatar.name,
-          gender: avatar.gender,
-          email: avatar.email,
-          video: `data:video/mp4;base64,${Buffer.from(avatar.video).toString('base64')}`,
-        }))
-      : null;
-
     const data = {
       predefined: predefinedFormatted,
       userdefined: userDefinedFormatted,
-      user: userFormatted,
     };
 
     return NextResponse.json(data, { status: 200 });

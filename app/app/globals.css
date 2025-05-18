@@ -139,6 +139,6 @@ html {
   font-family: sans-serif;
 }
 
-/* [data-sidebar="sidebar"] {
-  background-color: #f8fafc;
-} */
+[data-sidebar="sidebar"] {
+  background-color: #F9FAFB;
+} 

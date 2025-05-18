@@ -2,32 +2,19 @@
 
 import { useState, useEffect, type ChangeEvent, type FormEvent, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { getEmail } from "@/lib/authenticate"
 import { toast } from "react-toastify"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Globe, User, Shield, Moon, Sun } from "lucide-react"
 import { useRouter } from "next/navigation"
-
-const pageVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.5, ease: "easeOut" } },
-  exit: { opacity: 0, transition: { duration: 0.3, ease: "easeIn" } },
-}
-
-const tabVariants = {
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } },
-}
+import { pageVariants, tabVariants } from "@/lib/animations"
 
 export default function SettingsPage() {
-  const shouldReduceMotion = useReducedMotion()
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -110,8 +97,8 @@ export default function SettingsPage() {
     try {
       const response = await fetch("/api/user/change-password", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ email, currentPassword, newPassword}),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, currentPassword, newPassword }),
       })
       const data = await response.json()
       if (!response.ok) {
@@ -145,7 +132,7 @@ export default function SettingsPage() {
 
   return (
     <motion.div
-      className="container mx-auto p-2" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+      className="container mx-auto p-2" {...pageVariants}>
       <div className="max-w-4xl mx-auto w-full">
         <h1 className="text-3xl font-medium mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
           Account Settings
@@ -172,10 +159,7 @@ export default function SettingsPage() {
             <TabsContent value="profile" asChild>
               <motion.div
                 key="profile"
-                variants={tabVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
+                {...tabVariants}
               >
                 <section className="mb-8 bg-white dark:bg-gray-800 p-6 shadow-lg border border-gray-100 dark:border-gray-700">
                   <h2 className="text-2xl font-semibold mb-6 pb-2 border-b dark:border-gray-700">
@@ -320,8 +304,8 @@ export default function SettingsPage() {
                       { label: "Current Plan", value: currentPlan.name },
                       { label: "Renewal Date", value: currentPlan.renewalDate },
                       { label: "Usage Quota", value: currentPlan.usageQuota },
-                    ].map((item) => (
-                      <div key={item.label} className="p-4 bg-gray-200">
+                    ].map((item,index) => (
+                      <div key={item.label || index} className="p-4 bg-gray-200">
                         <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
                           {item.label}
                         </p>
@@ -376,17 +360,17 @@ export default function SettingsPage() {
                           value: confirmPassword,
                           setValue: setConfirmPassword,
                         },
-                      ].map((field) => (
-                        <div key={field.id}>
+                      ].map((field,index) => (
+                        <div key={field.id || index}>
                           <Label htmlFor={field.id} className="text-sm font-medium mb-1 block">
                             {field.label}
                           </Label>
-                          <Input
+                          <input
                             id={field.id}
                             type="password"
                             value={field.value}
                             onChange={(e) => field.setValue(e.target.value)}
-                            className="rounded-sm dark:bg-gray-700 dark:border-gray-600"
+                            className="w-full rounded dark:bg-gray-700 dark:border-gray-600 border px-3 py-2 border-gray-300 dark:focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
                             required
                           />
                         </div>
@@ -424,8 +408,8 @@ export default function SettingsPage() {
                         className:
                           "rounded-sm text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20",
                       },
-                    ].map((item) => (
-                      <div key={item.title}>
+                    ].map((item,index) => (
+                      <div key={item.title || index}>
                         <h3
                           className={`font-medium mb-2 ${item.title === "Delete Account" ? "text-red-600 dark:text-red-400" : ""
                             }`}
@@ -489,8 +473,8 @@ export default function SettingsPage() {
                           checked: reduceMotion,
                           onCheckedChange: setReduceMotion,
                         },
-                      ].map((item) => (
-                        <div key={item.title} className="flex items-center justify-between">
+                      ].map((item,index) => (
+                        <div key={item.title||index} className="flex items-center justify-between">
                           <div>
                             <h3 className="font-medium">{item.title}</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400">{item.description}</p>

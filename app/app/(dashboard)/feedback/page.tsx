@@ -29,11 +29,9 @@ export default function FeedbackPage() {
   }
 
   return (
-    <motion.div
-      variants={pageVariants} initial="initial" animate="animate" exit="exit">
-      <div className="container mx-auto p-2">
+      <motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit" className="container mx-auto p-2">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
             Feedback
           </h1>
           <p className="text-muted-foreground">Help us improve Avatar Lab with your feedback</p>
@@ -139,6 +137,6 @@ export default function FeedbackPage() {
             </Card>
           )}
         </div>
-      </div></motion.div>
+      </motion.div>
   )
 }

@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <header className="h-14 w-full shadow-sm px-2 flex items-center justify-between">
               <div>
                 <SidebarTrigger className="md:hidden" />
-                <span className="ml-4 text-2xl font-medium text-blue-600">Avatar Lab</span></div>
+                <span className="ml-4 text-lg font-bold text-blue-600">Avatar Lab</span></div>
               <div><TopRightIcons /></div>
             </header>
 

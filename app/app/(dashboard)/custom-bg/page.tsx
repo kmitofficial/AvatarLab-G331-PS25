@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Loader2, ImageIcon,Upload, Lock, Crown, CirclePlus } from "lucide-react"
+import { Loader2, ImageIcon,Upload, Lock, Crown, CirclePlus,Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
@@ -12,12 +12,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } 
 import BackgroundGallery from "@/components/background-gallery"
 import { getEmail } from "@/lib/authenticate"
 import { motion } from "framer-motion"
-
-const pageVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.5, ease: "easeOut" } },
-  exit: { opacity: 0, transition: { duration: 0.3, ease: "easeIn" } },
-}
+import { pageVariants } from "@/lib/animations"
 
 export default function VideoEditorPage() {
   const router = useRouter()
@@ -241,7 +236,7 @@ export default function VideoEditorPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Video Preview */}
                 <div className="space-y-2">
-                  <p className="font-medium">Background Preview</p>
+                  <p className="font-medium">Background Video Preview</p>
                   <div onClick={()=>setVideoSelectionOpen(true)} className="cursor-pointer relative bg-gray-900 rounded-sm overflow-hidden aspect-video">
                     <div className="absolute inset-0 flex items-center justify-center">
                       {loading ? (
@@ -281,7 +276,9 @@ export default function VideoEditorPage() {
                         </video>
                       ) : (
                         <div className="flex flex-col items-center justify-center text-center p-4">
-                          <CirclePlus size={40} color="white"/>
+                          <div className="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-2">
+                            <Plus className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                          </div>
                           <p className="text-white font-medium mt-2 mb-4">No video selected yet</p>
                         </div>
                       )}
@@ -292,7 +289,7 @@ export default function VideoEditorPage() {
                 {/* Background Preview */}
                 <div className="space-y-2">
                   <p className="font-medium">Background Preview</p>
-                  <div onClick={()=> setGalleryOpen(true)} className="cursor-pointer relative transition-all duration-300 ease-in-out bg-slate-100 rounded-sm hover:bg-gray-900 hover:text-white overflow-hidden aspect-video">
+                  <div onClick={()=> setGalleryOpen(true)} className="border border-dashed cursor-pointer relative transition-all duration-300 ease-in-out rounded-sm hover:bg-slate-50 overflow-hidden aspect-video">
                     <div className="absolute inset-0 flex items-center justify-center">
                       {backgroundType === "original" && !processedVideoUrl ? (
                         <div className="absolute inset-0"></div>
@@ -305,7 +302,9 @@ export default function VideoEditorPage() {
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center text-center p-4">
-                          <CirclePlus size={40}/>
+                          <div className="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-2">
+                            <Plus className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                          </div>
                           <p className="mt-2 font-medium mb-4">No background selected yet</p>
                         </div>
                       )}
@@ -439,7 +438,7 @@ export default function VideoEditorPage() {
                           Open Gallery
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[1000px] p-0 overflow-hidden">
+                      <DialogContent className="sm:max-w-[1000px] p-0 overflow-hidden rounded-sm">
                         <BackgroundGallery
                           onSelectBackground={handleSelectBackground}
                           onClose={() => setGalleryOpen(false)}
@@ -448,26 +447,6 @@ export default function VideoEditorPage() {
                         />
                       </DialogContent>
                     </Dialog>
-
-                    {backgroundType === "gallery" && selectedBackground && (
-                      <div className="mt-3 relative rounded-md overflow-hidden">
-                        <Image
-                          src={selectedBackground || "/placeholder.svg"}
-                          alt="Selected background"
-                          width={300}
-                          height={150}
-                          className="w-full h-24 object-cover"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute top-1 right-1 bg-black/50 text-white hover:bg-black/70 p-1 h-auto"
-                          onClick={() => setGalleryOpen(true)}
-                        >
-                          Change
-                        </Button>
-                      </div>
-                    )}
                   </div>
                 </div>
               </RadioGroup>

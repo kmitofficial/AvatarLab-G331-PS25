@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma'; // Make sure this path is correct
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -12,7 +12,7 @@ export async function GET() {
       src: image.file 
         ? `data:image/jpeg;base64,${Buffer.from(image.file).toString('base64')}` 
         : null,
-      premium: false // You can add logic to determine premium status if needed
+      premium: false
     }));
 
     return NextResponse.json(formatted);
