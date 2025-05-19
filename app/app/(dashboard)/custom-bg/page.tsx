@@ -115,7 +115,7 @@ export default function VideoEditorPage() {
       if (selectedBackgroundId) {
         formData.append("backgroundId", selectedBackgroundId.toString())
       }
-      const response = await fetch("/api/process-video", {
+      const response = await fetch("/api/user/process-video", {
         method: "POST",
         body: formData,
       })

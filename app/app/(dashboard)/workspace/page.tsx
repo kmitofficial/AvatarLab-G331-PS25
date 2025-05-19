@@ -113,6 +113,7 @@ export default function WorkspacePage() {
 
   const handleGenerate = async () => {
     setIsGenerating(true)
+    console.log(generateForm)
     try {
       const response = await fetch("/api/user/generate", {
         method: "POST",
@@ -208,7 +209,16 @@ export default function WorkspacePage() {
                   <Textarea
                     style={{ fontSize: '16px' }}
                     ref={textareaRef} value={generateForm.text}
-                    onChange={(e) => setGenerateForm((prev) => ({ ...prev, text: e.target.value }))}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      const lettersOnly = /^[a-zA-Z\s.,!?'"():;\-]*$/;
+
+                      if (lettersOnly.test(input) || input === "") {
+                        setGenerateForm((prev) => ({ ...prev, text: input }));
+                      } else {
+                        toast.error("Only letters and spaces are allowed.");
+                      }
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey && currentStep === 1) {
                         e.preventDefault();
