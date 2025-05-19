@@ -1,9 +1,18 @@
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,Slide } from "react-toastify";
 
 export default function RootLayout({ children }: {children: React.ReactNode}) {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-200 via-white to-blue-200">
-            <ToastContainer/>
+            <ToastContainer
+                position="top-center"
+                autoClose={1000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                theme="colored"
+                transition={Slide}
+            />
             <div className="flex flex-col min-h-screen max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
                 <main className="flex flex-1 items-center justify-center py-12">
                     <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">

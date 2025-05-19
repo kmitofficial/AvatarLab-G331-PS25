@@ -3,20 +3,14 @@
 import React, { useState, useMemo } from "react"
 import { Search, Play, Download, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getEmail } from "@/lib/authenticate"
-import { toast, Slide } from 'react-toastify'
-import { motion, AnimatePresence } from "framer-motion"
+import { toast } from 'react-toastify'
+import { motion } from "framer-motion"
+import { pageVariants, videoVariants } from "@/lib/animations"
 
 type VideoType = { id: string; filename: string; video: string; duration: string; date: string }
-
-const pageVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.5, ease: "easeOut" } },
-  exit: { opacity: 0, transition: { duration: 0.3, ease: "easeIn" } },
-}
 
 export default function MyVideosPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -83,20 +77,22 @@ export default function MyVideosPage() {
   }, [videos, searchQuery, sortBy])
 
   return (
-    <motion.div className="container mx-auto p-2" variants={pageVariants} initial="initial" animate="animate" exit="exit">
+    <motion.div className="container mx-auto p-2" {...pageVariants}>
+      <div className="p-0 sm:p-2">
       <div className="mb-6">
-        <h1 className="text-3xl font-medium bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
           My Videos
         </h1>
-        <p className="text-muted-foreground">Manage your generated videos</p>
+        <p className="text-muted-foreground text-sm">Manage your generated videos</p>
       </div>
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search videos..."
-            className="pl-8 rounded-sm focus-visible:border-none focus:outline-none focus:ring-0"
+          <input
+            type="text"
+            placeholder="Search videos"
+            className="w-full pl-8 py-2 rounded border border-green-200 focus:border-green-500 focus:ring-green-500 focus:outline-none focus:ring-0 text-xs sm:text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -116,9 +112,7 @@ export default function MyVideosPage() {
         </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }} transition={{ staggerChildren: 0.3, duration: 0.5 }} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <motion.div {...videoVariants} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {sortedVideos.map((video) => (
             <motion.div
               key={video.id}
@@ -126,8 +120,8 @@ export default function MyVideosPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{
-                duration: 0.3,         // faster entrance
-                ease: [0.4, 0, 0.2, 1] // smooth ease-in-out
+                duration: 1,
+                ease: [0.4, 0, 0.2, 1]
               }}
               className="flex items-center gap-4 rounded-sm border hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors shadow-md"
             >
@@ -193,7 +187,7 @@ export default function MyVideosPage() {
             />
           </DialogContent>
         </Dialog>
-      )}
+      )}</div>
     </motion.div>
   )
 }

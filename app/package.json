@@ -5,7 +5,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "worker": "tsx -r dotenv/config ./lib/worker.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
@@ -28,6 +29,7 @@
     "@radix-ui/react-switch": "^1.2.2",
     "@radix-ui/react-tabs": "^1.1.3",
     "@radix-ui/react-tooltip": "^1.1.8",
+    "bullmq": "^5.52.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
@@ -46,9 +48,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^11.0.5",
+    "redis": "^5.0.1",
     "simplex-noise": "^4.0.3",
     "stream-buffers": "^3.0.3",
     "tailwind-merge": "^3.0.2",
+    "tsx": "^4.19.4",
     "tw-animate-css": "^1.2.5",
     "vaul": "^1.1.2"
   },
@@ -63,6 +67,7 @@
     "@types/stream-buffers": "^3.0.7",
     "@types/uuid": "^10.0.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

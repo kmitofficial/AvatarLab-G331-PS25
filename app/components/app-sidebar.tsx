@@ -16,8 +16,8 @@ const videos: MenuItem[] = [
 ];
 
 const premium: MenuItem[] = [
-  {title: "Create avatar",url: "/createAvatar",icon:UserRound },
-  {title: "Create voice",url: "/createVoice",icon:AudioLines },
+  {title: "Avatars",url: "/avatars",icon:UserRound },
+  {title: "Voices",url: "/voices",icon:AudioLines },
   {title: "Edit Background",url: "/custom-bg",icon:PencilIcon },
 ];
 
@@ -42,7 +42,7 @@ export function AppSidebar() {
     ));
 
   return (
-    <Sidebar className="!bg-black">
+    <Sidebar>
       <SidebarHeader className="flex flex-row items-center justify-between px-4 py-2">
         <img src="logo.png" alt="Logo" height={50} width={50} className="object-contain" />
         <div className="flex flex-row gap-4">
@@ -53,18 +53,18 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
 
-          <SidebarGroupLabel className="mt-2 text-stone-950">Videos</SidebarGroupLabel>
+          <SidebarGroupLabel className="mt-2 text-stone-950 dark:text-white">Videos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(videos)}</SidebarMenu>
           </SidebarGroupContent>
 
-          <SidebarGroupLabel className="mt-2 text-stone-950">Premium</SidebarGroupLabel>
+          <SidebarGroupLabel className="mt-2 text-stone-950 dark:text-white">Premium</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(premium)}</SidebarMenu>
           </SidebarGroupContent>
           
 
-          <SidebarGroupLabel className="mt-2 text-stone-950">Others</SidebarGroupLabel>
+          <SidebarGroupLabel className="mt-2 text-stone-950 dark:text-white">Others</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(others)}</SidebarMenu>
           </SidebarGroupContent>

@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Lock, Crown, X } from "lucide-react"
-import Image from "next/image"
 
 interface Background {
   id: number
@@ -38,34 +37,23 @@ export default function BackgroundGallery({
     const fetchBackgrounds = async () => {
       try {
         setLoading(true)
-        const response = await fetch("/api/backgrounds")
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch backgrounds")
-        }
+        const response = await fetch("/api/dev/backgrounds")
+        if (!response.ok) throw new Error("Failed to fetch backgrounds")
 
         const data = await response.json()
-
-        // Group backgrounds by category
-        const groupedBackgrounds: Record<string, Background[]> = {}
-        const uniqueCategories: Set<string> = new Set()
+        const grouped: Record<string, Background[]> = {}
+        const uniqueCategories = new Set<string>()
 
         data.forEach((bg: Background) => {
-          if (!bg.src) return // Skip items without image data
-
+          if (!bg.src) return
           uniqueCategories.add(bg.category)
-
-          if (!groupedBackgrounds[bg.category]) {
-            groupedBackgrounds[bg.category] = []
-          }
-
-          groupedBackgrounds[bg.category].push(bg)
+          grouped[bg.category] = grouped[bg.category] || []
+          grouped[bg.category].push(bg)
         })
 
-        setBackgrounds(groupedBackgrounds)
+        setBackgrounds(grouped)
         setCategories(Array.from(uniqueCategories))
 
-        // Set default active category if current one doesn't exist
         if (uniqueCategories.size > 0 && !uniqueCategories.has(activeCategory)) {
           setActiveCategory(Array.from(uniqueCategories)[0])
         }
@@ -87,83 +75,82 @@ export default function BackgroundGallery({
   }
 
   return (
-    <>
-      <div className="p-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-        <div className="flex justify-between items-center">
-          <h3 className="text-xl font-bold">Background Gallery</h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="text-white hover:bg-blue-700/50 rounded-full"
-          >
-          </Button>
+    <div className="bg-background">
+      {/* Header */}
+      <div className="px-6 py-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-blue-600">Background Gallery</h3>
         </div>
-        <p className="text-blue-100 mt-1">Select a background to enhance your video</p>
+        <p className="text-sm text-blue-600">Select a background to enhance your video</p>
       </div>
 
-      <div className="p-6">
+      {/* Tabs and Backgrounds */}
+      <div className="px-6 py-5">
         {categories.length > 0 ? (
-          <Tabs defaultValue={activeCategory} value={activeCategory} onValueChange={setActiveCategory}>
-            <TabsList className="mb-6 bg-slate-100 p-1">
+          <Tabs value={activeCategory} onValueChange={setActiveCategory}>
+            <TabsList className="bg-muted p-1 rounded-none justify-start overflow-x-auto gap-1">
               {categories.map((category) => (
-                <TabsTrigger key={category} value={category} className="data-[state=active]:bg-white capitalize">
+                <TabsTrigger
+                  key={category}
+                  value={category}
+                  className="rounded-none capitalize whitespace-nowrap data-[state=active]:bg-background"
+                >
                   {category}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            <ScrollArea className="h-[400px] pr-4">
+            <ScrollArea className="mt-6 h-[400px] pr-4">
               {loading ? (
                 <div className="flex items-center justify-center h-40">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                  <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" />
                 </div>
               ) : error ? (
-                <div className="text-center p-4 text-red-500">{error}</div>
+                <div className="text-center p-4 text-destructive">{error}</div>
               ) : (
                 categories.map((category) => (
                   <TabsContent key={category} value={category} className="m-0">
-                    {!backgrounds[category] || backgrounds[category].length === 0 ? (
-                      <div className="text-center p-4 text-slate-500">No backgrounds available in this category</div>
+                    {!backgrounds[category]?.length ? (
+                      <div className="text-center p-4 text-muted-foreground">
+                        No backgrounds available in this category
+                      </div>
                     ) : (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         {backgrounds[category].map((bg) => (
                           <div
                             key={bg.id}
-                            className="relative group rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-md"
                             onClick={() => selectBackground(bg.id, bg.src, bg.premium)}
+                            className={`relative group rounded-sm overflow-hidden border transition hover:shadow-md ${bg.premium ? "cursor-not-allowed" : "cursor-pointer"
+                              }`}
                           >
                             {bg.src && (
-                              <div className="aspect-video relative">
-                                <Image
-                                  src={bg.src || "/placeholder.svg"}
+                              <div className="roundeaspect-video relative">
+                                <img
+                                  src={bg.src}
                                   alt={bg.name}
-                                  fill
-                                  className="object-cover transition-transform group-hover:scale-105"
+                                  className="rounded-none object-contain transition-transform group-hover:scale-105"
                                 />
                               </div>
                             )}
 
                             {bg.premium && (
-                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <div className="text-center p-2">
-                                  <Lock className="h-6 w-6 text-white mx-auto" />
-                                  <span className="text-xs font-medium text-white block mt-1">Premium</span>
-                                  <Button size="sm" variant="secondary" className="mt-2 text-xs">
-                                    <Crown className="h-3 w-3 mr-1" />
-                                    Upgrade
-                                  </Button>
-                                </div>
+                              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center space-y-2 z-10">
+                                <Lock className="text-white h-6 w-6" />
+                                <span className="text-xs text-white font-semibold">Premium</span>
+                                <Button size="sm" variant="secondary" className="text-xs">
+                                  <Crown className="h-3 w-3 mr-1" />
+                                  Upgrade
+                                </Button>
                               </div>
                             )}
 
-                            <div className="p-2 bg-white">
+                            <div className="bg-white px-2 py-1">
                               <div className="flex items-center justify-between">
-                                <p className="text-sm font-medium text-slate-700">{bg.name}</p>
+                                <p className="text-sm text-foreground font-medium truncate">{bg.name}</p>
                                 {bg.premium && (
                                   <Badge
                                     variant="outline"
-                                    className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]"
+                                    className="bg-yellow-100 text-yellow-700 border-yellow-200 text-[10px]"
                                   >
                                     PREMIUM
                                   </Badge>
@@ -181,19 +168,23 @@ export default function BackgroundGallery({
           </Tabs>
         ) : loading ? (
           <div className="flex items-center justify-center h-40">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" />
           </div>
         ) : (
-          <div className="text-center p-8 text-slate-500">
-            <p className="mb-2">No background categories available</p>
+          <div className="text-center p-6 text-muted-foreground">
+            <p>No background categories available</p>
           </div>
         )}
       </div>
-      <div className="p-4 border-t border-slate-200 flex justify-end">
+
+      {/* Footer */}
+      <div className="px-4 py-3 border-t bg-muted flex justify-end">
         <Button variant="outline" onClick={onClose}>
-          <X size={16} className="mr-2" /> Close Gallery
+          <X size={16} className="mr-2" />
+          Close Gallery
         </Button>
       </div>
-    </>
+    </div>
+
   )
 }

@@ -2,7 +2,18 @@ import { GridFSBucket, ObjectId } from "mongodb";
 import { Readable } from "stream";
 import connectMDB from "./mongodb";
 
-export async function uploadVideo(email: string, file: File) {
+interface UploadVideoResult {
+  message: string;
+  fileId: ObjectId;
+  filename: string;
+  metadata: {
+    email: string;
+    trashed: boolean;
+    trashedAt: null | Date;
+  };
+}
+
+export async function uploadVideo(email: string, file: File): Promise<UploadVideoResult> {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 

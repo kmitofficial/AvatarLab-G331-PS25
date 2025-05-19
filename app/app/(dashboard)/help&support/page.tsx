@@ -41,7 +41,7 @@ export default function HelpPage() {
       className="container mx-auto p-2"
     >
       <motion.div {...fadeUp} className="mb-6 text-center">
-        <h1 className="text-3xl font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
           Help & Support
         </h1>
         <p className="text-muted-foreground">
