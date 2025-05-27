@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React, { useState, useRef, useEffect } from "react"
 import { Play, Pause, RotateCw, ArrowRight, ArrowLeft, Check, Send } from "lucide-react"
@@ -80,7 +80,7 @@ export default function WorkspacePage() {
           setPreview(video)
           setCurrentStep(4)
           setIsGenerating(false)
-        } else if (status === "failed") {
+        } else if (message === "failed") {
           console.log("Task Failed")
           clearInterval(pollingInterval.current!)
           localStorage.removeItem("activeTaskId")
@@ -136,84 +136,6 @@ export default function WorkspacePage() {
   }
 
 
-  // Debounced function for LanguageTool suggestions
-  const fetchSuggestions = useCallback(
-    debounce(async (inputText: string) => {
-      if (!inputText) {
-        setSuggestions([]);
-        setSuggestionError(null);
-        setCorrectedTextPreview("");
-        return;
-      }
-      setLoadingSuggestions(true);
-      setSuggestionError(null);
-      try {
-        const res = await fetch('/api/languagetool', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: inputText }),
-        });
-
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status} ${res.statusText}`);
-        }
-
-        const data: { matches: Suggestion[]; error?: string } = await res.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
-        setSuggestions(data.matches || []);
-
-        // Generate corrected text preview
-        let updatedText = inputText;
-        for (const match of data.matches) {
-          if (match.replacements[0]) {
-            const replacement = match.replacements[0].value;
-            updatedText =
-              updatedText.slice(0, match.offset) +
-              replacement +
-              updatedText.slice(match.offset + match.length);
-          }
-        }
-        setCorrectedTextPreview(updatedText);
-      } catch (error: any) {
-        console.error('Error fetching suggestions:', error);
-        setSuggestionError(
-          error.message.includes('405')
-            ? 'API route not found. Please check server configuration.'
-            : 'Failed to load suggestions. Please try again later.'
-        );
-        setCorrectedTextPreview("");
-      } finally {
-        setLoadingSuggestions(false);
-      }
-    }, 500),
-    []
-  );
-
-  // Trigger suggestions on text change
-  useEffect(() => {
-    fetchSuggestions(generateForm.text);
-    return () => fetchSuggestions.cancel();
-  }, [generateForm.text, fetchSuggestions]);
-
-  // Apply all suggestions to update the entire text
-  const applyAllSuggestions = () => {
-    setGenerateForm((prev) => ({ ...prev, text: correctedTextPreview }));
-    setSuggestions([]);
-    setCorrectedTextPreview("");
-  };
-
-  // Get snippet for a suggestion (for long text)
-  const getSnippet = (text: string, offset: number, length: number) => {
-    const snippetLength = 30; // Characters to show before/after
-    const start = Math.max(0, offset - snippetLength);
-    const end = Math.min(text.length, offset + length + snippetLength);
-    const snippet = text.slice(start, end);
-    return start > 0 ? `...${snippet}` : snippet;
-  };
-
-  // Toggle video playback
   const toggleVideo = (id: string) => {
     const video = videoRefs.current[id]
     if (video) {
@@ -225,42 +147,40 @@ export default function WorkspacePage() {
         setPlayingVideo((prev) => ({ ...prev, [id]: false }))
       }
     }
-  };
+  }
 
-  // Toggle audio playback
   const toggleAudio = (id: string) => {
-    const audio = audioRefs.current[id];
+    const audio = audioRefs.current[id]
     if (audio) {
       if (audio.paused) {
         Object.entries(audioRefs.current).forEach(([key, a]) => {
           if (a && key !== id) {
-            a.pause();
-            setPlayingAudio((prev) => ({ ...prev, [key]: false }));
+            a.pause()
+            setPlayingAudio((prev) => ({ ...prev, [key]: false }))
           }
-        });
-        audio.play();
-        setPlayingAudio((prev) => ({ ...prev, [id]: true }));
+        })
+        audio.play()
+        setPlayingAudio((prev) => ({ ...prev, [id]: true }))
       } else {
-        audio.pause();
-        setPlayingAudio((prev) => ({ ...prev, [id]: false }));
+        audio.pause()
+        setPlayingAudio((prev) => ({ ...prev, [id]: false }))
       }
     }
-  };
+  }
 
-  // Handle step navigation
   const handleNextStep = () => {
     if (currentStep === 1 && generateForm.text.trim() !== "") {
-      setCurrentStep(2);
+      setCurrentStep(2)
     } else if (currentStep === 2 && generateForm.videoId !== "") {
-      setCurrentStep(3);
+      setCurrentStep(3)
     } else if (currentStep === 3 && generateForm.audioId !== "") {
-      handleGenerate();
+      handleGenerate()
     }
-  };
+  }
 
   const handlePreviousStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep(currentStep - 1)
     }
   }
 
@@ -285,66 +205,6 @@ export default function WorkspacePage() {
                   </p>
                 </div>
 
-                {/* Suggestions UI - Above Textarea */}
-                <div className="mt-4">
-                  {loadingSuggestions && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                      <span className="animate-pulse">Fetching suggestions...</span>
-                    </p>
-                  )}
-                  {suggestionError && (
-                    <div className="text-xs text-center bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-2 rounded-lg">
-                      {suggestionError}
-                    </div>
-                  )}
-                  {correctedTextPreview && (
-                    <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                          Corrected Text Preview
-                        </h3>
-                        <Button
-                          onClick={applyAllSuggestions}
-                          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm py-1 px-3 rounded-lg"
-                        >
-                          Apply All Changes
-                        </Button>
-                      </div>
-                      <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-                        {correctedTextPreview}
-                      </p>
-                    </div>
-                  )}
-                  {suggestions.length > 0 && (
-                    <ul className="list-none p-0 mb-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
-                      {suggestions.map((match, index) => (
-                        <li
-                          key={index}
-                          className="p-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
-                        >
-                          <div className="text-sm text-gray-700 dark:text-gray-300">
-                            <strong className="text-red-600 dark:text-red-400">
-                              {match.message}
-                            </strong>
-                            <br />
-                            {match.replacements[0] && (
-                              <span>
-                                Snippet: <em className="text-gray-600 dark:text-gray-400">
-                                  {getSnippet(generateForm.text, match.offset, match.length)}
-                                </em>
-                                <br />
-                                Suggested Change: <em className="text-green-600 dark:text-green-400">
-                                  {match.replacements[0].value}
-                                </em>
-                              </span>
-                            )}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
                 <div className="relative mt-8">
                   <Textarea
                     style={{ fontSize: '16px' }}
@@ -360,9 +220,9 @@ export default function WorkspacePage() {
                       }
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey && currentStep === 1) {
+                      if (e.key === "Enter" && !e.shiftKey && currentStep === 1) {
                         e.preventDefault();
-                        if (generateForm.text.trim() !== '') {
+                        if (generateForm.text.trim() !== "") {
                           handleNextStep();
                         }
                       }
@@ -372,7 +232,7 @@ export default function WorkspacePage() {
                   />
                   <Button
                     onClick={handleNextStep}
-                    disabled={generateForm.text.trim() === ''}
+                    disabled={generateForm.text.trim() === ""}
                     className="absolute bottom-3 right-3 rounded-full h-9 w-9 p-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                   >
                     <Send className="h-4 w-4" />
@@ -380,15 +240,12 @@ export default function WorkspacePage() {
                   </Button>
                 </div>
 
-                <div className="mt-2 text-xs text-center text-muted-foreground">
-                  Press Enter to continue
-                </div>
+                <div className="mt-2 text-xs text-center text-muted-foreground">Press Enter to continue</div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
-
 
       {/* Step 2: Select Avatar */}
       {currentStep === 2 && (

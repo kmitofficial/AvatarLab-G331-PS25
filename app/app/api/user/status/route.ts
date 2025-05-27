@@ -1,32 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { videoQueue } from "@/lib/bullmq";
-import connectMDB from "@/lib/mongodb";
-import { GridFSBucket, ObjectId } from "mongodb";
+import { getVideoBufferById } from "@/lib/getVideoBufferById";
+// import connectMDB from "@/lib/mongodb";
+// import { GridFSBucket, ObjectId } from "mongodb";
 
-export async function getVideoBufferById(fileId: string | ObjectId): Promise<Buffer> {
-  const { db } = await connectMDB();
-  const bucket = new GridFSBucket(db, { bucketName: "videos" });
+// export async function getVideoBufferById(fileId: string | ObjectId): Promise<Buffer> {
+//   const { db } = await connectMDB();
+//   const bucket = new GridFSBucket(db, { bucketName: "videos" });
 
-  const id = typeof fileId === "string" ? new ObjectId(fileId) : fileId;
+//   const id = typeof fileId === "string" ? new ObjectId(fileId) : fileId;
 
-  return new Promise((resolve, reject) => {
-    const chunks: Uint8Array[] = [];
+//   return new Promise((resolve, reject) => {
+//     const chunks: Uint8Array[] = [];
 
-    const downloadStream = bucket.openDownloadStream(id);
+//     const downloadStream = bucket.openDownloadStream(id);
 
-    downloadStream.on("data", (chunk:any) => {
-      chunks.push(chunk);
-    });
+//     downloadStream.on("data", (chunk:any) => {
+//       chunks.push(chunk);
+//     });
 
-    downloadStream.on("error", (err:any) => {
-      reject(err);
-    });
-    downloadStream.on("end", () => {
-      const buffer = Buffer.concat(chunks);
-      resolve(buffer);
-    });
-  });
-}
+//     downloadStream.on("error", (err:any) => {
+//       reject(err);
+//     });
+//     downloadStream.on("end", () => {
+//       const buffer = Buffer.concat(chunks);
+//       resolve(buffer);
+//     });
+//   });
+// }
 
 export async function GET(req: NextRequest) {
   const taskId = req.nextUrl.searchParams.get("taskId");
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
     const buffer = await getVideoBufferById(videoFileId)
     return NextResponse.json({ message: "done",video:`data:video/mp4;base64,${buffer.toString("base64")}`},{status:200});
   } else if (state === "failed") {
-    return NextResponse.json({ status: "failed" });
+    return NextResponse.json({ message: "failed" });
   } else {
     return NextResponse.json({ status: "processing" });
   }
