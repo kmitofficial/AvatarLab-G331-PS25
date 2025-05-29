@@ -26,7 +26,7 @@ Our key focus is to enable seamless avatar generation that can be used in variou
 
 | Contributor Name | First Milestone PPT | First Milestone Video | Second Milestone PPT | Second Milestone Video |
 |------------------|--------------------|-----------------------|----------------------|------------------------|
-| P HRITHIK RAJ | [PDF](assests/presentations/mileStone-1/HRITHIK/✨AI%20·%20AI%20Avatars_%20Transforming%20Text%20to%20Video.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PPT](assests/presentations/mileStone-2/HRITHIK/Avatar-Lab-Final-Presentation.pptx) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
+| P HRITHIK RAJ | [PDF](assests/presentations/mileStone-1/HRITHIK/✨AI%20·%20AI%20Avatars_%20Transforming%20Text%20to%20Video.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PDF](assests/presentations/mileStone-2/HRITHIK/Avatar-Lab-Final-Presentation.pdf) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
 | [Contributor 2] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor2_m1.pptx) | [Video Link 2.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor2_m2.pptx) | [Video Link 2.2] |
 | [Contributor 3] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor3_m1.pptx) | [Video Link 3.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor3_m2.pptx) | [Video Link 3.2] |
 | [Contributor 4] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor4_m1.pptx) | [Video Link 4.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor4_m2.pptx) | [Video Link 4.2] |
