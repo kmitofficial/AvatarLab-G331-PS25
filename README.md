@@ -36,9 +36,9 @@ Our key focus is to enable seamless avatar generation that can be used in variou
 # 🎨 Architecture Diagram:
 The overall architecture of our project is designed to efficiently convert text into talking avatar videos.
 
-![Architecture Diagram](assests/images/Project%20Architecture..jpg)
-
+![Architecture Diagram](./assests/images/Architecture_diagram.png)
 # 🛠 Workflow Diagram:
+
 The workflow of the project can be visualized as follows:
 
 ![Workflow Diagram](assests/images/Project%20Workflow..png)
