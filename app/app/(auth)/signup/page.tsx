@@ -117,9 +117,11 @@ export default function SignIn() {
 
           <div className="space-y-3">
             <Button variant="outline" className="rounded-none w-full">
+              <img src="/google.png" alt="Google" className="w-5 h-5" />
               Continue with Google
             </Button>
             <Button variant="outline" className="rounded-none w-full">
+              <img src="/github.png" alt="Github" className="w-5 h-5" />
               Continue with GitHub
             </Button>
           </div>

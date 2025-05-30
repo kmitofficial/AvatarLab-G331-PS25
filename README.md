@@ -22,17 +22,6 @@ Our key focus is to enable seamless avatar generation that can be used in variou
 * Customer Support Automation 💬
 
 
-# 👥 Contributors
-
-| Contributor Name | First Milestone PPT | First Milestone Video | Second Milestone PPT | Second Milestone Video |
-|------------------|--------------------|-----------------------|----------------------|------------------------|
-| P HRITHIK RAJ | [PDF](assests/presentations/mileStone-1/HRITHIK/✨AI%20·%20AI%20Avatars_%20Transforming%20Text%20to%20Video.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PDF](assests/presentations/mileStone-2/HRITHIK/Avatar-Lab-Final-Presentation.pdf) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
-| A YASHWANTH | [Pdf](assests/presentations/mileStone-1/YAsHWANTH/Avatar%20lab.pdf) | [Video](https://youtu.be/FT2L9GiezVY) | [PDF](assests/presentations/mileStone-2/YASHWANTH/AVATAR-LAB.pdf) | [Video](https://youtu.be/Oe95BvaxvAg?si=0ZrNcNjhkN1MfKZP )|
-| [Contributor 3] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor3_m1.pptx) | [Video Link 3.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor3_m2.pptx) | [Video Link 3.2] |
-| [Contributor 4] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor4_m1.pptx) | [Video Link 4.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor4_m2.pptx) | [Video Link 4.2] |
-| [Contributor 5] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor5_m1.pptx) | [Video Link 5.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor5_m2.pptx) | [Video Link 5.2] |
-| [Contributor 6] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor6_m1.pptx) | [Video Link 6.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor6_m2.pptx) | [Video Link 6.2] |
-
 # 🎨 Architecture Diagram:
 The overall architecture of our project is designed to efficiently convert text into talking avatar videos.
 
@@ -98,6 +87,19 @@ High-quality video outputs.
 ### 📁 Model References:
 - [Diffdub Github Page](https://github.com/liutaocode/DiffDub)
 - [Diffdub Research Paper](https://arxiv.org/pdf/2311.01811)
+
+# 👥 Contributors
+
+| Contributor Name | First Milestone PPT | First Milestone Video | Second Milestone PPT | Second Milestone Video |
+|------------------|--------------------|-----------------------|----------------------|------------------------|
+| P HRITHIK RAJ | [PPT](assests/presentations/mileStone-1/HRITHIK/✨AI%20·%20AI%20Avatars_%20Transforming%20Text%20to%20Video.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PPT](assests/presentations/mileStone-2/HRITHIK/Avatar-Lab-Final-Presentation.pdf) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
+| A YASHWANTH | [PPT](assests/presentations/mileStone-1/YAsHWANTH/Avatar%20lab.pdf) | [Video](https://youtu.be/FT2L9GiezVY) | [PPT](assests/presentations/mileStone-2/YASHWANTH/AVATAR-LAB.pdf) | [Video](https://youtu.be/Oe95BvaxvAg?si=0ZrNcNjhkN1MfKZP )|
+| NIKHILESH NILAGIRI | [PPT](/assests/presentations/mileStone-1/NIKHILESH/nikhilesh_m1.pdf) | [Video](https://youtu.be/lFoVxP5mgVU) | [PPT](/assests/presentations/mileStone-2/NIKHILESH/nikhilesh_m2.pdf) | [Video]( https://youtu.be/Q-7GzEw8D5s) |
+| N MAHESH | [PPT](/assests/presentations/mileStone-1/MAHESH/mahesh.pdf) | [Video Link 4.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor4_m2.pptx) | [Video Link 4.2] |
+| V VISHAL RAJ | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor5_m1.pptx) | [Video Link 5.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor5_m2.pptx) | [Video Link 5.2] |
+| K PRASANA KUMAR | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor6_m1.pptx) | [Video Link 6.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor6_m2.pptx) | [Video Link 6.2] |
+
+
 
 # ✅ Future Enhancements
 We plan to enhance Avatar Lab by:

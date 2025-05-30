@@ -12,7 +12,7 @@ export const tabVariants = {
 
 export const videoVariants = {
   initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { staggerChildren: 0.3, duration: 0.8,}},
+  animate: { opacity: 1, transition: { staggerChildren: 0.3, duration: 0.6,}},
 };
 
 export const workspaceVideoVariants = { 

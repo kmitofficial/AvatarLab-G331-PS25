@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 
 export function TopRightIcons() {
   const [notificationCount, setNotificationCount] = useState(1)
+  const [notificationMessage,setNotificationMessage] = useState("")
   const [details, setDetails] = useState({ email: "", username: "", image: "" })
   const [profilePhoto, setProfilePhoto] = useState("")
   const router = useRouter();

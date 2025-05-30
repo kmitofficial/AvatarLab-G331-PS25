@@ -252,7 +252,7 @@ export default function VoicesPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch('/api/user/delete', { method: 'POST', body: JSON.stringify({ email: userEmail, id: id, role: "uservoice" }) });
+      const response = await fetch('/api/user/delete-user-assets', { method: 'POST', body: JSON.stringify({ email: userEmail, id: id, role: "uservoice" }) });
       const { message } = await response.json();
       if (response.ok) {
         toast.success(message);
@@ -303,7 +303,7 @@ export default function VoicesPage() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">My Voices</h2>
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">My Voices</h2>
                 <span className="border border-gray-200 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 mt-1 rounded-sm text-xs">
                   {userDefinedVoices.length}
                 </span>
@@ -401,7 +401,7 @@ export default function VoicesPage() {
           <div>
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Public Voices</h2>
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">Public Voices</h2>
                 <span className="border border-gray-200 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 mt-1 rounded-sm text-xs">
                   {preDefinedVoices.length}
                 </span>

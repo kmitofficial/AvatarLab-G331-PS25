@@ -3,6 +3,7 @@ import { connection } from "./bullmq";
 import { uploadVideo } from "./gridfs";
 import { prisma } from "./prisma";
 import dotenv from "dotenv";
+import axios from "axios";
 dotenv.config();
 
 console.log("🧑🏻‍🏭 Worker Started");
@@ -79,17 +80,12 @@ const worker = new Worker(
     THV.append("reference_video", videoFile);
 
     console.log("🚀 Sending data to Diffdub !");
-    const videoRes = await fetch(process.env.DIFF_DUB_URL!, {
-      method: "POST",
-      body: THV,
+    const videoRes = await axios.post(process.env.DIFF_DUB_URL!, THV, {
+      timeout: 30 * 60 * 1000,
+      responseType: "arraybuffer",
     });
 
-    if (!videoRes.ok) {
-      const errText = await videoRes.text();
-      throw new Error(`DiffDub failed: ${errText}`);
-    }
-
-    const finalVideoBuffer = Buffer.from(await videoRes.arrayBuffer());
+    const finalVideoBuffer = Buffer.from(await videoRes.data);
     const finalVideoFile = new File([finalVideoBuffer], `Untitled Video (${videoCount}).mp4`, {
       type: "video/mp4",
     });

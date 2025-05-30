@@ -47,7 +47,7 @@ export default function MyVideosPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch('api/user/deleteVideo', {
+      const response = await fetch('api/user/trash-toggle', {
         method: "POST",
         body: JSON.stringify({ email: email, videoID: id, role: "delete" })
       })

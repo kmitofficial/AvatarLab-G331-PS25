@@ -227,7 +227,7 @@ export default function AvatarsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch('/api/user/delete', { method: 'POST', body: JSON.stringify({ email: useremail, id: id, role: "useravatar" }) });
+      const response = await fetch('/api/user/delete-user-assets', { method: 'POST', body: JSON.stringify({ email: useremail, id: id, role: "useravatar" }) });
       const { message } = await response.json();
       if (response.ok) {
         toast.success(message);
@@ -273,7 +273,7 @@ export default function AvatarsPage() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">My Avatars</h2>
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">My Avatars</h2>
                 <span className="border border-gray-200 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 mt-1 rounded-sm text-xs">
                   {userDefinedAvatar.length}
                 </span>
@@ -373,7 +373,7 @@ export default function AvatarsPage() {
           <div>
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Public Avatars</h2>
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">Public Avatars</h2>
                 <span className="border border-gray-200 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 mt-1 rounded-sm text-xs">
                   {preDefinedAvatar.length}
                 </span>
@@ -517,7 +517,8 @@ export default function AvatarsPage() {
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
-                    muted={!recordedBlob}
+                    muted
+
                     autoPlay
                     playsInline
                     controls={!!recordedBlob}

@@ -65,7 +65,7 @@ export default function TrashPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch('/api/user/client-delete', { method: 'POST', body: JSON.stringify({ email: email, videoId: id }) });
+      const response = await fetch('/api/user/delete-permanent', { method: 'POST', body: JSON.stringify({ email: email, videoId: id }) });
       const { message } = await response.json();
       if (response.ok) {
         toast.success(message);
@@ -79,7 +79,7 @@ export default function TrashPage() {
 
   const handleRestore = async (videoID: string) => {
     try {
-      const response = await fetch('api/user/deleteVideo', { method: "POST", body: JSON.stringify({ email: email, videoID: videoID, role: "restore" }) });
+      const response = await fetch('api/user/trash-toggle', { method: "POST", body: JSON.stringify({ email: email, videoID: videoID, role: "restore" }) });
       const { message } = await response.json();
       if (response.ok) {
         setVideos(prev => prev.filter(video => video.id !== videoID));

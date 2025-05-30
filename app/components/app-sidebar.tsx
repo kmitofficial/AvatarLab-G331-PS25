@@ -18,7 +18,7 @@ const videos: MenuItem[] = [
 const premium: MenuItem[] = [
   {title: "Avatars",url: "/avatars",icon:UserRound },
   {title: "Voices",url: "/voices",icon:AudioLines },
-  {title: "Edit Background",url: "/custom-bg",icon:PencilIcon },
+  {title: "Edit Background",url: "/editbackground",icon:PencilIcon },
 ];
 
 const others: MenuItem[] = [

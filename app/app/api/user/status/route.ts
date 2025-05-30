@@ -1,33 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { videoQueue } from "@/lib/bullmq";
-import { getVideoBufferById } from "@/lib/getVideoBufferById";
-// import connectMDB from "@/lib/mongodb";
-// import { GridFSBucket, ObjectId } from "mongodb";
-
-// export async function getVideoBufferById(fileId: string | ObjectId): Promise<Buffer> {
-//   const { db } = await connectMDB();
-//   const bucket = new GridFSBucket(db, { bucketName: "videos" });
-
-//   const id = typeof fileId === "string" ? new ObjectId(fileId) : fileId;
-
-//   return new Promise((resolve, reject) => {
-//     const chunks: Uint8Array[] = [];
-
-//     const downloadStream = bucket.openDownloadStream(id);
-
-//     downloadStream.on("data", (chunk:any) => {
-//       chunks.push(chunk);
-//     });
-
-//     downloadStream.on("error", (err:any) => {
-//       reject(err);
-//     });
-//     downloadStream.on("end", () => {
-//       const buffer = Buffer.concat(chunks);
-//       resolve(buffer);
-//     });
-//   });
-// }
+import { getVideoBufferById } from "@/lib/gridfs";
 
 export async function GET(req: NextRequest) {
   const taskId = req.nextUrl.searchParams.get("taskId");
@@ -38,9 +11,7 @@ export async function GET(req: NextRequest) {
   if (!job) {
     return NextResponse.json({ status: "not_found" });
   }
-
   const state = await job.getState();
-
   if (state === "completed") {
     const videoFileId = job.returnvalue;
     console.log("Job returned value: ",videoFileId);
