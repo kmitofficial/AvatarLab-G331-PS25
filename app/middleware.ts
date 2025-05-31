@@ -30,3 +30,5 @@ export async function middleware(req: any) {
 export const config = {
   matcher: ['/workspace', '/videos', '/trash', '/feedback', '/help&support'],
 };
+
+

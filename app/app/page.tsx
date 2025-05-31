@@ -23,7 +23,7 @@ export default function Home() {
               <div className="flex items-center">
                 <Link href="/" className="flex items-center">
                   <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    AvatarLab
+                    EchoFrames
                   </span>
                 </Link>
               </div>

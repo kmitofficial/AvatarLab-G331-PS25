@@ -12,6 +12,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 import { pageVariants, workspaceVideoVariants, workspaceVoiceVariants } from "@/lib/animations"
+import { getSession } from "next-auth/react"
 
 type Avatar = { id: string; name: string; gender: string; video: string }
 type Voice = { id: string; name: string; gender: string; audio: string; text: string }
@@ -35,35 +36,71 @@ export default function WorkspacePage() {
   const [taskId, setTaskId] = useState<string | null>(null)
   const router = useRouter()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await getEmail()
-      if (result) {
-        const email = result.email
-        setEmail(email)
+useEffect(() => {
+  const fetchData = async () => {
+    console.log("Checking authentication at", new Date().toISOString());
 
-        const avatarsRes = await fetch('/api/dev/avatars', {
-          method: "POST",
-          body: JSON.stringify({ email }),
-        })
-        const { predefined: predefinedAvatars, userdefined: userAvatars } = await avatarsRes.json()
-        setpreDefinedAvatars(predefinedAvatars)
-        setUserAvatars(userAvatars)
+    // Check for token in localStorage (for custom token-based auth)
+    const token = localStorage.getItem("token");
+    console.log("LocalStorage token:", token);
 
-        const voicesRes = await fetch('/api/dev/voices', {
-          method: "POST",
-          body: JSON.stringify({ email }),
-        })
-        const { predefined, userdefined } = await voicesRes.json()
-        setpreDefinedVoices(predefined)
-        setUserVoices(userdefined)
-      } else {
-        router.push("/login")
+    // Log cookies to check for next-auth.session-token
+    console.log("Cookies:", document.cookie);
+
+    // Try to get the NextAuth.js session
+    try {
+      const session = await getSession();
+      console.log("NextAuth.js session:", session);
+      if (!token && !session?.user?.email) {
+        console.log("No token or session found, redirecting to /login");
+        router.push("/login");
+        return;
       }
+    } catch (error) {
+      console.error("Error fetching session:", error);
+      router.push("/login");
+      return;
     }
 
-    fetchData()
-  }, [])
+    try {
+      const result = await getEmail();
+      console.log("getEmail result:", result);
+      if (!result) {
+        console.log("getEmail returned null, redirecting to /login");
+        router.push("/login");
+        return;
+      }
+
+      const email = result.email;
+      setEmail(email);
+
+      const avatarsRes = await fetch('/api/dev/avatars', {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      if (!avatarsRes.ok) throw new Error("Failed to fetch avatars");
+      const { predefined: predefinedAvatars, userdefined: userAvatars } = await avatarsRes.json();
+      setpreDefinedAvatars(predefinedAvatars || []);
+      setUserAvatars(userAvatars || []);
+
+      const voicesRes = await fetch('/api/dev/voices', {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      if (!voicesRes.ok) throw new Error("Failed to fetch voices");
+      const { predefined, userdefined } = await voicesRes.json();
+      setpreDefinedVoices(predefined || []);
+      setUserVoices(userdefined || []);
+    } catch (err) {
+      console.error("Error loading user data:", err);
+      toast.error("Failed to load workspace data. Please try again.");
+      router.push("/login");
+    }
+  };
+
+  fetchData();
+}, [router]);
+
 
   const pollStatus = (taskId: string) => {
     pollingInterval.current = setInterval(async () => {
