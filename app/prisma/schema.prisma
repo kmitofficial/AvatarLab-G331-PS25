@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Avatar {
+  id     String @id @default(uuid())
+  name   String
+  gender String
+  video  Bytes
+}
+
+model Voice {
+  id       String @id @default(uuid())
+  name     String
+  text     String
+  gender   String
+  audio    Bytes
+  language String
+}
+
+model UserAvatar {
+  id     String @id @default(uuid())
+  name   String
+  gender String
+  email  String
+  video  Bytes
+}
+
+model UserVoice {
+  id       String @id @default(uuid())
+  name     String
+  text     String
+  gender   String
+  language String
+  email    String
+  audio    Bytes
+}
+
+model images {
+  id       Int    @id @default(autoincrement())
+  category String @db.VarChar(100)
+  name     String @db.VarChar(255)
+  file     Bytes
+}

@@ -21,15 +21,16 @@ Our key focus is to enable seamless avatar generation that can be used in variou
 
 * Customer Support Automation 💬
 
+
 # 🎨 Architecture Diagram:
 The overall architecture of our project is designed to efficiently convert text into talking avatar videos.
 
-![Architecture Diagram](images/Project%20Architecture..jpg)
-
+![Architecture Diagram](./assests/images/Architecture_diagram.png)
 # 🛠 Workflow Diagram:
+
 The workflow of the project can be visualized as follows:
 
-![Workflow Diagram](images/Project%20Workflow..png)
+![Workflow Diagram](/assests/images/Workflow_diagram.png)
 
 # 📜 Reference Research Papers:
 
@@ -87,14 +88,28 @@ High-quality video outputs.
 - [Diffdub Github Page](https://github.com/liutaocode/DiffDub)
 - [Diffdub Research Paper](https://arxiv.org/pdf/2311.01811)
 
+# 👥 Contributors
+
+| Contributor Name | First Milestone PPT | First Milestone Video | Second Milestone PPT | Second Milestone Video |
+|------------------|--------------------|-----------------------|----------------------|------------------------|
+| P HRITHIK RAJ | [PPT](assests/presentations/mileStone-1/HRITHIK/✨AI%20·%20AI%20Avatars_%20Transforming%20Text%20to%20Video.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PPT](assests/presentations/mileStone-2/HRITHIK/Avatar-Lab-Final-Presentation.pdf) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
+| A YASHWANTH | [PPT](assests/presentations/mileStone-1/YAsHWANTH/Avatar%20lab.pdf) | [Video](https://youtu.be/FT2L9GiezVY) | [PPT](assests/presentations/mileStone-2/YASHWANTH/AVATAR-LAB.pdf) | [Video](https://youtu.be/Oe95BvaxvAg?si=0ZrNcNjhkN1MfKZP )|
+| NIKHILESH NILAGIRI | [PPT](/assests/presentations/mileStone-1/NIKHILESH/nikhilesh_m1.pdf) | [Video](https://youtu.be/lFoVxP5mgVU) | [PPT](/assests/presentations/mileStone-2/NIKHILESH/nikhilesh_m2.pdf) | [Video]( https://youtu.be/Q-7GzEw8D5s) |
+| N MAHESH | [PPT](/assests/presentations/mileStone-1/MAHESH/mahesh.pdf) | [Video](https://youtu.be/wXBeMU6vFlQ) | [PPT](/assests/presentations/mileStone-2/MAHESH/Avatar%20Lab%20ms2.pdf) | [Video](https://youtu.be/a1WBLwN1LWs?feature=shared) |
+| V VISHAL RAJ | [PPT](/assests/presentations/mileStone-1/VISHAL%20RAJ%20/vishal%20m1.pdf) | [Video](https://www.youtube.com/watch?v=RifoTDsPQGs) | [PPT](/assests/presentations/mileStone-2/VISHAL%20RAJ/vishal%20m2.pdf) | [Video](https://youtu.be/YLtXlmWXxPE) |
+| K PRASANA KUMAR | [PPT](/assests/presentations/mileStone-1/PRASANA/prasanna%20m1.pdf) | [Video](https://www.youtube.com/watch?v=FH7-hDgiRYQ) | [PPT](/assests/presentations/mileStone-2/PRASANA%20/prasanna%20m2.pdf) | [Video](https://www.youtube.com/watch?v=iKzjnD208Sk) |
+
+
+
 # ✅ Future Enhancements
 We plan to enhance Avatar Lab by:
 
-✅ Adding more realistic facial expressions.
+✅ Complete deployment and optimize production environment.
 
 ✅ Integrating multi-lingual text-to-speech models.
 
 ✅ Improving real-time performance using CUDA acceleration.
 
-✅ Adding customizable avatars and background settings.
+✅ Finalize hosting platform based on cost and scale.
+
 
