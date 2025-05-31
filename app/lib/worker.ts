@@ -1,5 +1,4 @@
-import { Worker, Job } from "bullmq";
-import { connection } from "./bullmq";
+import { Worker, Job, Queue } from "bullmq";
 import { uploadVideo } from "./gridfs";
 import { prisma } from "./prisma";
 import dotenv from "dotenv";
@@ -8,6 +7,13 @@ dotenv.config();
 
 console.log("🧑🏻‍🏭 Worker Started");
 let videoCount = 1;
+
+const connection = {
+  host: process.env.REDIS_HOST!,
+  port: Number(process.env.REDIS_PORT!)
+};
+
+const generation = new Queue("video-generation",{connection});
 
 const worker = new Worker(
   "video-generation",
@@ -105,3 +111,5 @@ worker.on("completed", (job) => {
 worker.on("failed", (job, err) => {
   console.error(`❌ Job ${job?.id} failed: ${err.message} !`);
 });
+
+export { generation };

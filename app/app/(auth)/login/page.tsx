@@ -9,6 +9,8 @@ import React from "react";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { pageVariants } from "@/lib/animations";
+import GitHubAuth from "@/components/Github-Auth";
+import GoogleAuth from "@/components/Google-Auth";
 
 export default function SignIn() {
   const router = useRouter();
@@ -109,14 +111,8 @@ export default function SignIn() {
           </div>
 
           <div className="space-y-3">
-            <Button variant="outline" className="rounded-none w-full">
-              <img src="/google.png" alt="Google" className="w-5 h-5" />
-              Continue with Google
-            </Button>
-            <Button variant="outline" className="rounded-none w-full">
-              <img src="/github.png" alt="GitHub" className="w-5 h-5" />
-              Continue with GitHub
-            </Button>
+            <GoogleAuth/>
+            <GitHubAuth/>
           </div>
 
           <p className="text-center text-sm text-gray-600">

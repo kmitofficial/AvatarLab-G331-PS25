@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { motion } from 'framer-motion'
 import { pageVariants, workspaceVideoVariants } from "@/lib/animations";
+import * as blazeface from "@tensorflow-models/blazeface";
+import * as tf from "@tensorflow/tfjs";
 
 type Avatar = { id: string; name: string; gender: string; video: string; }
 type userAvatar = { id: string; name: string; gender: string; email: string, video: string; }
@@ -39,6 +41,18 @@ export default function AvatarsPage() {
 
   const [playingVideo, setPlayingVideo] = useState<Record<string, boolean>>({})
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [faceStatus, setFaceStatus] = useState("");
+  const [model, setModel] = useState<blazeface.BlazeFaceModel | null>(null);
+  const [avgBrightness, setAvgBrightness] = useState<number | null>(null);
+
+  // Load model once
+  useEffect(() => {
+    tf.ready().then(async () => {
+      const loadedModel = await blazeface.load();
+      setModel(loadedModel);
+    });
+  }, []);
 
   const fetchAvatars = async () => {
     try {
@@ -82,15 +96,107 @@ export default function AvatarsPage() {
 
   const startCamera = async () => {
     try {
-      const media = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const media = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 512 },
+          height: { ideal: 512 },
+          aspectRatio: 1, // Ensure 1:1 aspect ratio
+        },
+        audio: true,
+      });
       setStream(media);
       if (videoRef.current) {
         videoRef.current.srcObject = media;
+      }
+      if (videoRef.current) {
+        videoRef.current.onloadeddata = () => {
+          console.log("Video dimensions:", videoRef.current?.videoWidth, "x", videoRef.current?.videoHeight);
+          detectFaceLoop();
+        };
       }
     } catch (error) {
       console.error("Error accessing camera:", error);
       alert("Unable to access your camera. Please check permissions.");
     }
+  };
+
+  const detectFaceLoop = async () => {
+    if (!videoRef.current || !model || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Set canvas to 512x512 to match video resolution
+    canvas.width = 512;
+    canvas.height = 512;
+
+    const analyze = async () => {
+      if (!model || video.paused || video.ended) return;
+
+      const predictions = await model.estimateFaces(video, false);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let status = "";
+
+      // Run face detection if face exists
+      if (predictions.length > 0) {
+        const face = predictions[0];
+
+        if (Array.isArray(face.topLeft) && Array.isArray(face.bottomRight)) {
+          const x = face.topLeft[0];
+          const y = face.topLeft[1];
+          const w = face.bottomRight[0] - x;
+          const h = face.bottomRight[1] - y;
+
+          const cx = x + w / 2;
+          const cy = y + h / 2;
+          const circleRadius = 512 * 0.25; // Adjusted for 512x512 canvas
+          const dx = cx - 512 / 2;
+          const dy = cy - 512 / 2;
+
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance > circleRadius / 2) {
+            status = "Center your face in the circle";
+          } else if (w < 80 || h < 80) {
+            status = "Come closer to the camera";
+          } else if (w > 200 || h > 200) {
+            status = "Move back from the camera";
+          }
+        }
+      } else {
+        status = "No face detected";
+      }
+
+      // Brightness check (only override if status is OK)
+      ctx.drawImage(video, 0, 0, 512, 512); // Draw at 512x512
+      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      let totalBrightness = 0;
+      for (let i = 0; i < frame.data.length; i += 4) {
+        const r = frame.data[i];
+        const g = frame.data[i + 1];
+        const b = frame.data[i + 2];
+        const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+        totalBrightness += brightness;
+      }
+      const avgBrightness = totalBrightness / (frame.data.length / 4);
+      setAvgBrightness(avgBrightness);
+
+      // ✅ Only override if no face status
+      if (!status) {
+        if (avgBrightness < 60) {
+          status = "Too dark – increase lighting";
+        } else if (avgBrightness > 220) {
+          status = "Too bright – reduce lighting";
+        }
+      }
+      setFaceStatus(status);
+      requestAnimationFrame(analyze);
+    };
+
+    requestAnimationFrame(analyze);
   };
 
   const resetRecording = () => {
@@ -227,7 +333,7 @@ export default function AvatarsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch('/api/user/delete-user-assets', { method: 'POST', body: JSON.stringify({ email: useremail, id: id, role: "useravatar" }) });
+      const response = await fetch('/api/user/delete', { method: 'POST', body: JSON.stringify({ email: useremail, id: id, role: "useravatar" }) });
       const { message } = await response.json();
       if (response.ok) {
         toast.success(message);
@@ -273,7 +379,7 @@ export default function AvatarsPage() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">My Avatars</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">My Avatars</h2>
                 <span className="border border-gray-200 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 mt-1 rounded-sm text-xs">
                   {userDefinedAvatar.length}
                 </span>
@@ -295,7 +401,8 @@ export default function AvatarsPage() {
                       Create Avatar
                     </p>
                   </CardContent>
-                </Card></motion.div>
+                </Card>
+              </motion.div>
 
               {/* User Avatars */}
               {userDefinedAvatar.map((avatar) => (
@@ -363,7 +470,8 @@ export default function AvatarsPage() {
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">{avatar.gender}</p>
                     </CardContent>
-                  </Card></motion.div>
+                  </Card>
+                </motion.div>
               ))}
             </div>
 
@@ -373,7 +481,7 @@ export default function AvatarsPage() {
           <div>
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">Public Avatars</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Public Avatars</h2>
                 <span className="border border-gray-200 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 mt-1 rounded-sm text-xs">
                   {preDefinedAvatar.length}
                 </span>
@@ -513,12 +621,35 @@ export default function AvatarsPage() {
             ) : (
               <div className="grid gap-6 py-4 sm:py-6">
                 {/* Video Recording */}
-                <div className="relative rounded-sm overflow-hidden border border-indigo-200 bg-black aspect-[8/6] max-h-[2000vh] sm:max-h-[40vh]">
+                <div className="relative rounded-sm overflow-hidden border border-indigo-200 bg-black aspect-square w-[512px] h-[512px] mx-auto">
+                  {/* AR-style overlay for guidance */}
+                  {!recordedBlob && (
+                    <>
+                      {/* Canvas for face detection */}
+                      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full z-10" />
+
+                      {/* Centering circle */}
+                      <div className="absolute inset-0 z-20 pointer-events-none flex justify-center items-center">
+                        <div
+                          className={`w-56 h-56 border-4 border-dashed rounded-full opacity-70 transition-all duration-300 ${
+                            faceStatus && !faceStatus.includes("optimal")
+                              ? "border-red-500 shadow-[0_0_15px_5px_rgba(255,0,0,0.7)] animate-pulse"
+                              : "border-indigo-600"
+                          }`}
+                        />
+                      </div>
+                      {/* Face detection status */}
+                      {faceStatus && (
+                        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 text-white bg-black/70 px-4 py-2 rounded text-sm z-30">
+                          {faceStatus}
+                        </div>
+                      )}
+                    </>
+                  )}
                   <video
                     ref={videoRef}
                     className="w-full h-full object-cover"
-                    muted
-
+                    muted={!recordedBlob}
                     autoPlay
                     playsInline
                     controls={!!recordedBlob}
@@ -578,6 +709,11 @@ export default function AvatarsPage() {
                         <li>Keep your face centered in the frame</li>
                         <li>Record for 5-10 seconds</li>
                       </ul>
+                      {!recordedBlob && (
+                        <p className="text-sm text-indigo-500 mt-3">
+                          Ensure your <strong>entire face</strong> fits inside the circle and is <strong>well-lit</strong>.
+                        </p>
+                      )}
                     </AlertDescription>
                   </Alert>
                 </div>

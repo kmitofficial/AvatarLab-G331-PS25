@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BookOpen, FileText, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-
+import { useRouter } from "next/navigation"; 
 
 const faqItems = [
   { question: "How do I create my first talking head video?", answer: 'To create your first talking head video, navigate to the Workspace page, enter your script, select an avatar, choose a voice, and click "Generate Video". The process typically takes a few minutes depending on the length of your script.' },
@@ -27,7 +27,6 @@ const guideItems = [
   { title: "Using Templates", description: "Save time by creating and using video templates" },
   { title: "Account Management", description: "Manage your subscription, billing, and account settings" }
 ];
-
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -35,6 +34,7 @@ const fadeUp = {
   transition: { duration: 0.4, ease: "easeOut" }
 }
 export default function HelpPage() {
+  const router = useRouter();
   return (
     <motion.div
       {...fadeUp}
@@ -109,18 +109,25 @@ export default function HelpPage() {
               </CardHeader>
               <CardContent>
                 <div className="p-0 grid gap-4 sm:grid-cols-4">
-                  {guideItems.map((g, i) => (
-                    <motion.div key={i} {...fadeUp}>
-                      <Card className="p-0 rounded-sm cursor-pointer hover:shadow-md transition-shadow">
-                        <CardHeader className="p-4">
-                          <CardTitle className="text-lg">{g.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0 text-sm text-muted-foreground">
-                          {g.description}
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
+
+              {guideItems.map((g, i) => {
+                const slug = g.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+                return (
+                  <motion.div key={i} {...fadeUp}>
+                  <Card
+                    className="p-0 rounded-sm cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => router.push(`/help&support/guides/${slug}`)}
+                  >
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-lg">{g.title}</CardTitle>
+                    </CardHeader>
+                      <CardContent className="p-4 pt-0 text-sm text-muted-foreground">
+                        {g.description}
+                      </CardContent>
+                  </Card>
+                  </motion.div>
+                );
+              })}
                 </div>
               </CardContent>
             </Card>
