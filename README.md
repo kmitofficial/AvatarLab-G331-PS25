@@ -25,12 +25,12 @@ Our key focus is to enable seamless avatar generation that can be used in variou
 # 🎨 Architecture Diagram:
 The overall architecture of our project is designed to efficiently convert text into talking avatar videos.
 
-![Architecture Diagram](./assests/images/Architecture_diagram.png)
+![Architecture Diagram](/assets/images/Architecture.png)
 # 🛠 Workflow Diagram:
 
 The workflow of the project can be visualized as follows:
 
-![Workflow Diagram](assests/images/Project%20Workflow..png)
+![Workflow Diagram](/assets/images/WorkFlow.png)
 
 # 📜 Reference Research Papers:
 
@@ -92,12 +92,12 @@ High-quality video outputs.
 
 | Contributor Name | First Milestone PPT | First Milestone Video | Second Milestone PPT | Second Milestone Video |
 |------------------|--------------------|-----------------------|----------------------|------------------------|
-| P HRITHIK RAJ | [PPT](assests/presentations/mileStone-1/HRITHIK/✨AI%20·%20AI%20Avatars_%20Transforming%20Text%20to%20Video.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PPT](assests/presentations/mileStone-2/HRITHIK/Avatar-Lab-Final-Presentation.pdf) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
-| A YASHWANTH | [PPT](assests/presentations/mileStone-1/YAsHWANTH/Avatar%20lab.pdf) | [Video](https://youtu.be/FT2L9GiezVY) | [PPT](assests/presentations/mileStone-2/YASHWANTH/AVATAR-LAB.pdf) | [Video](https://youtu.be/Oe95BvaxvAg?si=0ZrNcNjhkN1MfKZP )|
-| NIKHILESH NILAGIRI | [PPT](/assests/presentations/mileStone-1/NIKHILESH/nikhilesh_m1.pdf) | [Video](https://youtu.be/lFoVxP5mgVU) | [PPT](/assests/presentations/mileStone-2/NIKHILESH/nikhilesh_m2.pdf) | [Video]( https://youtu.be/Q-7GzEw8D5s) |
-| N MAHESH | [PPT](/assests/presentations/mileStone-1/MAHESH/mahesh.pdf) | [Video Link 4.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor4_m2.pptx) | [Video Link 4.2] |
-| V VISHAL RAJ | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor5_m1.pptx) | [Video Link 5.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor5_m2.pptx) | [Video Link 5.2] |
-| K PRASANA KUMAR | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone1/contributor6_m1.pptx) | [Video Link 6.1] | [PPT](https://github.com/username/repo/raw/main/assets/presentations/milestone2/contributor6_m2.pptx) | [Video Link 6.2] |
+| P HRITHIK RAJ | [PPT](/assets/presentations/HRITHIK/MileStone1.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PPT](/assets/presentations/HRITHIK/MileStone2.pdf) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
+| A YASHWANTH | [PPT](/assets/presentations/YASHWANTH/MileStone1.pdf) | [Video](https://youtu.be/FT2L9GiezVY) | [PPT](/assets/presentations/YASHWANTH/MileStone2.pdf) | [Video](https://youtu.be/Oe95BvaxvAg?si=0ZrNcNjhkN1MfKZP )|
+| NIKHILESH NILAGIRI | [PPT](/assets/presentations/NIKHILESH/MileStone1.pdf) | [Video](https://youtu.be/lFoVxP5mgVU) | [PPT](/assets/presentations/NIKHILESH/MileStone2.pdf) | [Video]( https://youtu.be/Q-7GzEw8D5s) |
+| N MAHESH | [PPT](/assets/presentations/MAHESH/MileStone1.pdf) | [Video](https://youtu.be/wXBeMU6vFlQ) | [PPT](/assets/presentations/MAHESH/MileStone2.pdf) | [Video](https://youtu.be/a1WBLwN1LWs?feature=shared) |
+| V VISHAL RAJ | [PPT](/assets/presentations/VISHAL/MileStone1.pdf) | [Video](https://www.youtube.com/watch?v=RifoTDsPQGs) | [PPT](/assets/presentations/VISHAL/MileStone2.pdf) | [Video](https://youtu.be/YLtXlmWXxPE) |
+| K PRASANA KUMAR | [PPT](/assets/presentations/PRASANNA/MileStone1.pdf) | [Video](https://www.youtube.com/watch?v=FH7-hDgiRYQ) | [PPT](/assets/presentations/PRASANNA/MileStone2.pdf) | [Video](https://www.youtube.com/watch?v=iKzjnD208Sk) |
 
 
 
