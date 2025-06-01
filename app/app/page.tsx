@@ -475,7 +475,7 @@ export default function Home() {
                 <div className="md:w-2/3 mb-8 md:mb-0">
                   <h2 className="text-3xl font-bold text-white mb-4">Ready to create your first AI avatar?</h2>
                   <p className="text-blue-100 text-lg">
-                    Join thousands of professionals who are already using Avatar Lab to create engaging content.
+                    Join thousands of professionals who are already using Echo Frames to create engaging content.
                   </p>
                 </div>
                 <div className="md:w-1/3 md:text-right">
@@ -495,7 +495,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
-                <h3 className="text-lg font-semibold mb-4 text-blue-300">Avatar Lab</h3>
+                <h3 className="text-lg font-semibold mb-4 text-blue-300">Echo Frames</h3>
                 <p className="text-sm text-gray-400">
                   Create lifelike AI avatars that speak your words—ideal for business, education, or storytelling.
                 </p>
@@ -542,7 +542,7 @@ export default function Home() {
               </div>
             </div>
             <div className="mt-12 text-center text-sm text-gray-500">
-              &copy; {new Date().getFullYear()} Avatar Lab. All rights reserved.
+              &copy; {new Date().getFullYear()} Echo Frames. All rights reserved.
             </div>
           </div>
         </footer>
