@@ -110,7 +110,7 @@ export default function Home() {
                 />
                 your Ideas with{" "}
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Avatar Lab
+                  Echo Frames
                 </span>
               </motion.h1>
               <motion.p

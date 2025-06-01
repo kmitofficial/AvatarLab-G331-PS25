@@ -130,7 +130,7 @@ export default function SignIn() {
           </p>
 
           <p className="text-xs text-gray-500 text-center">
-            By signing up to the Echo Persona platform you understand and agree to our{" "}
+            By signing up to the EchoFrames platform you understand and agree to our{" "}
             <Link href="#" className="text-blue-600 hover:underline">
               Terms and Conditions
             </Link>{" "}and{" "}
