@@ -97,7 +97,7 @@ High-quality video outputs.
 | NIKHILESH NILAGIRI | [PPT](/assests/presentations/mileStone-1/NIKHILESH/nikhilesh_m1.pdf) | [Video](https://youtu.be/lFoVxP5mgVU) | [PPT](/assests/presentations/mileStone-2/NIKHILESH/nikhilesh_m2.pdf) | [Video]( https://youtu.be/Q-7GzEw8D5s) |
 | N MAHESH | [PPT](/assests/presentations/mileStone-1/MAHESH/mahesh.pdf) | [Video](https://youtu.be/wXBeMU6vFlQ) | [PPT](/assests/presentations/mileStone-2/MAHESH/Avatar%20Lab%20ms2.pdf) | [Video](https://youtu.be/a1WBLwN1LWs?feature=shared) |
 | V VISHAL RAJ | [PPT](/assests/presentations/mileStone-1/VISHAL%20RAJ/vishal%20m1.pdf) | [Video](https://www.youtube.com/watch?v=RifoTDsPQGs) | [PPT](/assests/presentations/mileStone-2/VISHAL%20RAJ/vishal%20m2.pdf) | [Video](https://youtu.be/YLtXlmWXxPE) |
-| K PRASANA KUMAR | [PPT](/assests/presentations/mileStone-1/PRASANA/prasanna%20m1.pdf) | [Video](https://www.youtube.com/watch?v=FH7-hDgiRYQ) | [PPT](/assests/presentations/mileStone-2/PRASANA%20/prasanna%20m2.pdf) | [Video](https://www.youtube.com/watch?v=iKzjnD208Sk) |
+| K PRASANA KUMAR | [PPT](/assests/presentations/mileStone-1/PRASANA/prasanna%20m1.pdf) | [Video](https://www.youtube.com/watch?v=FH7-hDgiRYQ) | [PPT](/assests/presentations/mileStone-2/PRASANNA/prasanna%20m2.pdf) | [Video](https://www.youtube.com/watch?v=iKzjnD208Sk) |
 
 
 
