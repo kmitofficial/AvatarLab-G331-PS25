@@ -141,4 +141,8 @@ html {
 
 [data-sidebar="sidebar"] {
   background-color: #F9FAFB;
-} 
+}
+
+.dark [data-sidebar="sidebar"] {
+  background-color: inherit;
+}

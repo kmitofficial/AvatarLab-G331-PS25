@@ -93,7 +93,7 @@ High-quality video outputs.
 | Contributor Name | First Milestone PPT | First Milestone Video | Second Milestone PPT | Second Milestone Video |
 |------------------|--------------------|-----------------------|----------------------|------------------------|
 | P HRITHIK RAJ | [PPT](/assets/presentations/HRITHIK/MileStone1.pdf) | [Video](https://youtu.be/-5II5I0m4bY) | [PPT](/assets/presentations/HRITHIK/MileStone2.pdf) | [Video](https://youtu.be/cqQ-ZUpZ1sQ) |
-| A YASHWANTH | [PPT](/assets/presentations/YASHWANTH/MileStone1.pdf) | [Video](https://youtu.be/FT2L9GiezVY) | [PPT](/assets/presentations/YASHWANTH/MileStone2.pdf) | [Video](https://youtu.be/Oe95BvaxvAg?si=0ZrNcNjhkN1MfKZP )|
+| A YASHWANTH | [PPT](/assets/presentations/YASHWANTH/MileStone1.pdf) | [Video](https://youtu.be/FT2L9GiezVY) | [PPT](/assets/presentations/YASHWANTH/MileStone2.pdf) | [Video](https://youtu.be/-QRKHvKZqNc?si=oiZKHnSNAHOMjJwF)|
 | NIKHILESH NILAGIRI | [PPT](/assets/presentations/NIKHILESH/MileStone1.pdf) | [Video](https://youtu.be/lFoVxP5mgVU) | [PPT](/assets/presentations/NIKHILESH/MileStone2.pdf) | [Video]( https://youtu.be/Q-7GzEw8D5s) |
 | N MAHESH | [PPT](/assets/presentations/MAHESH/MileStone1.pdf) | [Video](https://youtu.be/wXBeMU6vFlQ) | [PPT](/assets/presentations/MAHESH/MileStone2.pdf) | [Video](https://youtu.be/a1WBLwN1LWs?feature=shared) |
 | V VISHAL RAJ | [PPT](/assets/presentations/VISHAL/MileStone1.pdf) | [Video](https://www.youtube.com/watch?v=RifoTDsPQGs) | [PPT](/assets/presentations/VISHAL/MileStone2.pdf) | [Video](https://youtu.be/YLtXlmWXxPE) |
