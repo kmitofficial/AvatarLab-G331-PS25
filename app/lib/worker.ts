@@ -9,8 +9,10 @@ console.log("🧑🏻‍🏭 Worker Started");
 let videoCount = 1;
 
 const connection = {
-  host: process.env.REDIS_HOST,
-  port: Number(process.env.REDIS_PORT),
+  host: process.env.REDIS_HOST || "living-starling-44812.upstash.io",
+  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379,
+  password: process.env.REDIS_PASSWORD || "Aa8MAAIjcDE2Zjc3ZjRjYmY3Yzk0ZWU0YTc4OWRkZGRmMWE0YzYzMXAxMA",
+  tls: {}, // required for `rediss://` (secure connection)
 };
 
 const generation = new Queue("video-generation",{connection});

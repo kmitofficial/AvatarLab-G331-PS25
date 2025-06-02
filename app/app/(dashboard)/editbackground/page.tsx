@@ -205,8 +205,9 @@ export default function VideoEditorPage() {
           )}
 
           <div className="flex justify-end mt-4 space-x-2">
-            <Button variant="outline" onClick={() => router.push("/")}>
-              Cancel
+            <Button variant="outline" onClick={() => router.push("/workspace")}
+               className="text-blue-400 border border-blue-400 hover:text-yellow-400 hover:border-yellow-400 shadow-blue-300 hover:shadow-yellow-300 shadow-md hover:shadow-lg transition duration-300">
+              Create
             </Button>
             <Button
               onClick={() => {
