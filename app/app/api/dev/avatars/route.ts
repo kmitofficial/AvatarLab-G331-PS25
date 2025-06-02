@@ -13,10 +13,6 @@ export async function POST(req: NextRequest) {
       select: { id: true, name: true, gender: true, video: true },
     });
 
-    const userDefinedAvatars = await prisma.userAvatar.findMany({
-      select: { id: true, name: true, gender: true, email: true, video: true },
-    });
-
     const userAvatars = await prisma.userAvatar.findMany({
       where: { email },
       select: { id: true, name: true, gender: true, email: true, video: true },
@@ -29,7 +25,7 @@ export async function POST(req: NextRequest) {
       video: `data:video/mp4;base64,${Buffer.from(avatar.video).toString('base64')}`,
     }));
 
-    const userDefinedFormatted = userDefinedAvatars.map((avatar) => ({
+    const userDefinedFormatted = userAvatars.map((avatar) => ({
       id: avatar.id,
       name: avatar.name,
       gender: avatar.gender,

@@ -13,10 +13,6 @@ export async function POST(req: NextRequest) {
       select: { id: true, name: true, gender: true, text: true, language: true, audio: true },
     })
 
-    const userDefinedVoices = await prisma.userVoice.findMany({
-      select: { id: true, name: true, gender: true, text: true, language: true, email: true, audio: true },
-    })
-
     const userVoices = await prisma.userVoice.findMany({
       where: { email },
       select: { id: true, name: true, gender: true, text: true, language: true, email: true, audio: true },
@@ -31,7 +27,7 @@ export async function POST(req: NextRequest) {
       audio: `data:audio/mp3;base64,${Buffer.from(voice.audio).toString("base64")}`,
     }))
 
-    const userDefinedFormatted = userDefinedVoices.map((voice) => ({
+    const userDefinedFormatted = userVoices.map((voice) => ({
       id: voice.id,
       name: voice.name,
       gender: voice.gender,
